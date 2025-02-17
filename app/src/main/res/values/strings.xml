@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">PrintHubApp</string>
+
+    <!--    Auth    -->
+    <string name="placeholder_mail">Почта</string>
+    <string name="placeholder_password">Пароль</string>
+    <string name="logint_button_text">Войти</string>
+    <string name="registration_button_text">Зарегистрироваться</string>
+    <string name="no_profile_text">Нет профиля?</string>
+    <!--    END     -->
+
+    <!--    Registration    -->
+    <string name="placeholder_nameCompany">Название компании</string>
+    <string name="placeholder_address">Адрес</string>
+    <string name="select_role">Выберите роль</string>
+    <string name="client_role">Клиент</string>
+    <string name="printhub_role">Владелец принтера</string>
+    <!--    END     -->
+
 </resources>
