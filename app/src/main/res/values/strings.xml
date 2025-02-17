@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">PrintHubApp</string>
+
+    <!--    Auth    -->
+    <string name="placeholder_mail">Почта</string>
+    <string name="placeholder_password">Пароль</string>
+    <string name="logint_button_text">Войти</string>
+    <string name="registration_button_text">Зарегистрироваться</string>
+    <string name="no_profile_text">Нет профиля?</string>
+
 </resources>

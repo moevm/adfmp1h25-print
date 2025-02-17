@@ -42,7 +42,12 @@ fun AuthScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(
+                top = 16.dp,
+                bottom = 32.dp,
+                start = 16.dp,
+                end = 16.dp
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -61,8 +66,7 @@ fun AuthScreen() {
                 contentDescription = null,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
-        }
-        Column {
+            Spacer(modifier = Modifier.height(50.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = login,
