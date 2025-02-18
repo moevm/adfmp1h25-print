@@ -17,4 +17,12 @@
     <string name="printhub_role">Владелец принтера</string>
     <!--    END     -->
 
+    <!--    About   -->
+    <string name="title_about">Разработчики</string>
+    <string name="subtitle_developers">Над приложением работали:</string>
+    <string name="developer_1">Чернякова Валерия 1304</string>
+    <string name="developer_2">Беззубов Даниил 1303</string>
+    <string name="developer_3">Ярусова Татьяна 1304</string>
+    <!--    END -->
+
 </resources>
