@@ -40,4 +40,10 @@
     <string name="navigation_item_profile">Профиль</string>
     <!--    END     -->
 
+    <!--    Add Order Screen  -->
+    <string name="add_order_title">Создание заказа</string>
+    <string name="choose_printhub">Выберите владельца принтера</string>
+    <string name="placeholder_choose_address">Введите адрес центра</string>
+    <!--    END     -->
+
 </resources>
