@@ -15,7 +15,9 @@ fun NavGraphBuilder.authNavigation(navHostController: NavHostController) {
             onRegistration = {
                 navHostController.navigate(Screen.RegistrationScreen.route)
             },
-            onAbout = {}
+            onAbout = {
+                navHostController.navigate(Screen.AboutScreen.route)
+            }
         )
     }
     composable(
@@ -23,7 +25,9 @@ fun NavGraphBuilder.authNavigation(navHostController: NavHostController) {
     ) {
         RegistrationScreen(
             onRegistration = {},
-            onAbout = {}
+            onAbout = {
+                navHostController.navigate(Screen.AboutScreen.route)
+            }
         )
     }
 }

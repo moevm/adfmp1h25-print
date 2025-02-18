@@ -8,5 +8,6 @@ import androidx.navigation.compose.NavHost
 fun AppNavGraph(navHostController: NavHostController) {
     NavHost(navController = navHostController, startDestination = Screen.AuthScreen.route) {
         authNavigation(navHostController)
+        aboutNavigation(navHostController)
     }
 }

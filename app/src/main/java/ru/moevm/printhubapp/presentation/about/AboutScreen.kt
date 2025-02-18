@@ -2,6 +2,7 @@ package ru.moevm.printhubapp.presentation.about
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +28,9 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun AboutScreen() {
+fun AboutScreen(
+    onBack: () -> Unit
+) {
     Scaffold(
         topBar = {
             Column(
@@ -42,6 +45,7 @@ fun AboutScreen() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
+                        modifier = Modifier.clickable { onBack() },
                         painter = painterResource(R.drawable.back_arrow_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -106,5 +110,5 @@ fun AboutScreen() {
 @Preview(showBackground = true)
 @Composable
 fun AboutScreenPreview() {
-    AboutScreen()
+    AboutScreen({})
 }
