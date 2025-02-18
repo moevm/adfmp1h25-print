@@ -23,7 +23,7 @@
     <string name="developer_1">Чернякова Валерия 1304</string>
     <string name="developer_2">Беззубов Даниил 1303</string>
     <string name="developer_3">Ярусова Татьяна 1304</string>
-    <!--    END -->
+    <!--    END     -->
 
     <!--    Order card  -->
     <string name="status_create">Создан</string>
@@ -32,6 +32,12 @@
     <string name="address_print_hub">Адрес: Санкт-Петербург, улица Попова 5Б</string>
     <string name="date_of_create">Дата создания: 15.03.2025</string>
     <string name="date_of_last_change">Дата последнего обновления: 15.03.2025</string>
-    <!--    END -->
+    <!--    END     -->
+
+    <!--    Main Client Screen  -->
+    <string name="main_title">PrintHub</string>
+    <string name="navigation_item_home">Главная</string>
+    <string name="navigation_item_profile">Профиль</string>
+    <!--    END     -->
 
 </resources>
