@@ -1,6 +1,7 @@
 package ru.moevm.printhubapp.presentation.auth
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,7 +37,11 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun AuthScreen() {
+fun AuthScreen(
+    onLoginTo: () -> Unit,
+    onRegistration: () -> Unit,
+    onAbout: () -> Unit
+) {
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Column(
@@ -57,7 +62,9 @@ fun AuthScreen() {
             Icon(
                 painter = painterResource(R.drawable.info_ic),
                 contentDescription = null,
-                modifier = Modifier.align(Alignment.End),
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable { onAbout() },
                 tint = AppTheme.colors.gray7
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -131,7 +138,7 @@ fun AuthScreen() {
         }
         val isEnable = (login.isNotEmpty() && password.isNotEmpty())
         Button(
-            onClick = {},
+            onClick = { onLoginTo() },
             modifier = Modifier.fillMaxWidth(),
             enabled = isEnable,
             colors = ButtonDefaults.buttonColors(
@@ -170,7 +177,7 @@ fun AuthScreen() {
             )
         }
         Button(
-            onClick = {},
+            onClick = { onRegistration() },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = AppTheme.colors.gray2,
@@ -191,5 +198,5 @@ fun AuthScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun AuthScreenPreview() {
-    AuthScreen()
+    AuthScreen({}, {}, {})
 }

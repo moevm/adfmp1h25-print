@@ -3,6 +3,7 @@ package ru.moevm.printhubapp.presentation.auth
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +43,10 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreen(
+    onRegistration: () -> Unit,
+    onAbout: () -> Unit
+) {
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
@@ -69,7 +73,9 @@ fun RegistrationScreen() {
             Icon(
                 painter = painterResource(R.drawable.info_ic),
                 contentDescription = null,
-                modifier = Modifier.align(Alignment.End),
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable { onAbout() },
                 tint = AppTheme.colors.gray7
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -281,7 +287,7 @@ fun RegistrationScreen() {
             }
 
         Button(
-            onClick = {},
+            onClick = { onRegistration() },
             modifier = Modifier.fillMaxWidth(),
             enabled = isEnable,
             colors = ButtonDefaults.buttonColors(
@@ -305,5 +311,5 @@ fun RegistrationScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun AuthScreenPreview() {
-    RegistrationScreen()
+    RegistrationScreen({}, {})
 }
