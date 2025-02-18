@@ -3,6 +3,7 @@ package ru.moevm.printhubapp.presentation.client
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +23,7 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 @Composable
 fun OrderCard() {
     Card(
+        modifier = Modifier.fillMaxWidth(),
         onClick = { TODO() },
         colors = CardDefaults.cardColors(
             containerColor = AppTheme.colors.orange3 ,
