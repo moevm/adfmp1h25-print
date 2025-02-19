@@ -50,7 +50,7 @@ fun PriceListDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    text = "Прайс-лист",
+                    text = stringResource(R.string.price_list_dialog_title),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )

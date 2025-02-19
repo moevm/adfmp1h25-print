@@ -62,5 +62,13 @@
     <string name="create_order_button_text">Оформить заказ</string>
     <!--    END     -->
 
+    <!--    Price List Dialog    -->
+    <string name="price_list_dialog_title">Прайс-лист</string>
+    <!--    END     -->
+
+    <!--    Success Order Screen    -->
+    <string name="success">Заказ успешно оформлен!</string>
+    <!--    END     -->
+
 
 </resources>
