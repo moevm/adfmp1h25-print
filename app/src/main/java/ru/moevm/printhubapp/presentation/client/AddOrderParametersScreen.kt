@@ -47,6 +47,7 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 @Composable
 fun AddOrderParametersScreen() {
     var totalPrice by remember { mutableStateOf(0) }
+    var showPriceList by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             Column(
@@ -102,10 +103,10 @@ fun AddOrderParametersScreen() {
             ) {
                 ShowPrice(
                     modifier = Modifier
+                        .clickable { showPriceList = true }
                         .background(AppTheme.colors.gray1, RoundedCornerShape(12.dp))
                         .padding(vertical = 8.dp, horizontal = 16.dp)
-                        .align(Alignment.Start)
-                        .clickable { TODO() },
+                        .align(Alignment.Start),
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 ChooseFormatPrint()
@@ -146,11 +147,16 @@ fun AddOrderParametersScreen() {
             }
         }
     }
+    if(showPriceList) {
+        PriceListDialog(
+            onDismiss = { showPriceList = false },
+        )
+    }
 }
 
 @Composable
 private fun ShowPrice(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
