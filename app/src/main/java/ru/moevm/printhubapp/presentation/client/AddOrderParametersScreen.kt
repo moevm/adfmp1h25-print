@@ -250,13 +250,9 @@ private fun ChooseFormatPrint() {
 @Composable
 private fun ChooseCountList() {
     var countList by remember { mutableStateOf(1) }
-    var buttonWidth by remember { mutableStateOf(0) }
     Button(
         modifier = Modifier
-            .fillMaxWidth()
-            .onGloballyPositioned { coordinates ->
-                buttonWidth = coordinates.size.width
-            },
+            .fillMaxWidth(),
         enabled = false,
         onClick = {},
         shape = RoundedCornerShape(12.dp),
@@ -311,13 +307,9 @@ private fun ChooseCountList() {
 
 @Composable
 private fun ChooseFile() {
-    var buttonWidth by remember { mutableStateOf(0) }
     Button(
         modifier = Modifier
-            .fillMaxWidth()
-            .onGloballyPositioned { coordinates ->
-                buttonWidth = coordinates.size.width
-            },
+            .fillMaxWidth(),
         enabled = false,
         onClick = {},
         shape = RoundedCornerShape(12.dp),

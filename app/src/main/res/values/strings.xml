@@ -70,5 +70,15 @@
     <string name="success">Заказ успешно оформлен!</string>
     <!--    END     -->
 
+    <!--    Order Details Screen   -->
+    <string name="order_details_title">Заказ №%s</string>
+    <string name="format_print">Формат печати: </string>
+    <string name="count_list_with_param">Количество листов: </string>
+    <string name="file">Файл</string>
+    <string name="reason_reject">Причина отказа</string>
+    <!--    END     -->
+
+
+
 
 </resources>
