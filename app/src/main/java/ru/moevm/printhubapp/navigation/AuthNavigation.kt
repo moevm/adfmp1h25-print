@@ -11,7 +11,13 @@ fun NavGraphBuilder.authNavigation(navHostController: NavHostController) {
         route = Screen.AuthScreen.route
     ) {
         AuthScreen(
-            onLoginTo = {},
+            onLoginTo = {
+                navHostController.navigate(Screen.MainClientScreen.route) {
+                    popUpTo(Screen.AuthScreen.route) {
+                        inclusive = true
+                    }
+                }
+            },
             onRegistration = {
                 navHostController.navigate(Screen.RegistrationScreen.route)
             },
@@ -24,7 +30,13 @@ fun NavGraphBuilder.authNavigation(navHostController: NavHostController) {
         route = Screen.RegistrationScreen.route
     ) {
         RegistrationScreen(
-            onRegistration = {},
+            onRegistration = {
+                navHostController.navigate(Screen.MainClientScreen.route) {
+                    popUpTo(Screen.RegistrationScreen.route) {
+                        inclusive = true
+                    }
+                }
+            },
             onAbout = {
                 navHostController.navigate(Screen.AboutScreen.route)
             }

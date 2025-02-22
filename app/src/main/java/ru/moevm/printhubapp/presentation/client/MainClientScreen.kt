@@ -1,6 +1,7 @@
 package ru.moevm.printhubapp.presentation.client
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +33,11 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun MainClientScreen() {
+fun MainClientScreen(
+    onAbout: () -> Unit,
+    addOrder: () -> Unit,
+    showOrderDetails: () -> Unit
+) {
     Scaffold(
         topBar = {
             Column(
@@ -54,6 +59,7 @@ fun MainClientScreen() {
                         color = AppTheme.colors.black9
                     )
                     Icon(
+                        modifier = Modifier.clickable { onAbout() },
                         painter = painterResource(R.drawable.info_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -116,12 +122,12 @@ fun MainClientScreen() {
             ) {
                 for(i in 0..5) {
                     item {
-                        OrderCard()
+                        OrderCard(showOrderDetails)
                     }
                 }
             }
             FloatingActionButton(
-                onClick = { TODO() },
+                onClick = { addOrder() },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
@@ -141,5 +147,5 @@ fun MainClientScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun MainClientScreenPreview() {
-    MainClientScreen()
+    MainClientScreen({}, {}, {})
 }

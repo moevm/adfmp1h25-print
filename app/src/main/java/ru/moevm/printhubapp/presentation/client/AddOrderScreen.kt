@@ -1,6 +1,7 @@
 package ru.moevm.printhubapp.presentation.client
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +37,10 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun AddOrderScreen() {
+fun AddOrderScreen(
+    onAbout: () -> Unit,
+    onBack: () -> Unit
+) {
     var search by remember { mutableStateOf("")}
     Scaffold(
         topBar = {
@@ -56,8 +60,10 @@ fun AddOrderScreen() {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
+                            modifier = Modifier.clickable { onBack() },
                             painter = painterResource(R.drawable.back_arrow_ic),
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = AppTheme.colors.black9
                         )
                         Spacer(modifier =  Modifier.width(12.dp))
                         Text(
@@ -68,6 +74,7 @@ fun AddOrderScreen() {
                         )
                     }
                     Icon(
+                        modifier = Modifier.clickable { onAbout() },
                         painter = painterResource(R.drawable.info_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -149,5 +156,5 @@ fun AddOrderScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun AddOrderScreenPreview() {
-    AddOrderScreen()
+    AddOrderScreen({}, {})
 }

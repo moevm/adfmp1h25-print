@@ -9,5 +9,6 @@ fun AppNavGraph(navHostController: NavHostController) {
     NavHost(navController = navHostController, startDestination = Screen.AuthScreen.route) {
         authNavigation(navHostController)
         aboutNavigation(navHostController)
+        clientNavigation(navHostController)
     }
 }
