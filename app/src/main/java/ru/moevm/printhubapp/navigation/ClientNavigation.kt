@@ -3,6 +3,7 @@ package ru.moevm.printhubapp.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import ru.moevm.printhubapp.presentation.client.AddOrderParametersScreen
 import ru.moevm.printhubapp.presentation.client.AddOrderScreen
 import ru.moevm.printhubapp.presentation.client.MainClientScreen
 
@@ -28,7 +29,22 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
             },
             onBack = {
                 navHostController.popBackStack()
+            },
+            onNavigateTo = {
+                navHostController.navigate(Screen.AddOrderParametersScreen.route)
             }
+        )
+    }
+    composable(
+        route = Screen.AddOrderParametersScreen.route
+    ) {
+        AddOrderParametersScreen(
+            onAbout = {
+                navHostController.navigate(Screen.AboutScreen.route)
+            },
+            onBack = {
+                navHostController.popBackStack()
+            },
         )
     }
 }

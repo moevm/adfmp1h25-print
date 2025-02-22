@@ -18,10 +18,12 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun PrintHubCard() {
+fun PrintHubCard(
+    onNavigateTo: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { TODO() },
+        onClick = onNavigateTo,
         colors = CardDefaults.cardColors(
             containerColor = AppTheme.colors.orange3 ,
             contentColor = AppTheme.colors.black9,
@@ -46,5 +48,5 @@ fun PrintHubCard() {
 @Preview(showBackground = true)
 @Composable
 private fun PrintHubCardPreview() {
-    PrintHubCard()
+    PrintHubCard({})
 }

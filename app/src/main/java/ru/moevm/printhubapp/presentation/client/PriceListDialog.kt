@@ -52,7 +52,8 @@ fun PriceListDialog(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     text = stringResource(R.string.price_list_dialog_title),
                     fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = AppTheme.colors.black9
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 PrintFormatItem.entries.forEach {
@@ -63,7 +64,8 @@ fun PriceListDialog(
                         Text(
                             text = stringResource(it.value),
                             fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            color = AppTheme.colors.black9
                         )
                         Spacer(modifier = Modifier.width(48.dp))
                         HorizontalDivider(
@@ -74,7 +76,8 @@ fun PriceListDialog(
                         Text(
                             text = it.price.toString() + " ₽",
                             fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            color = AppTheme.colors.black9
                         )
                     }
                     Spacer(modifier = Modifier.height(4.dp))

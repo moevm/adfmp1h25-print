@@ -45,7 +45,10 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun AddOrderParametersScreen() {
+fun AddOrderParametersScreen(
+    onBack: () -> Unit,
+    onAbout: () -> Unit
+) {
     var totalPrice by remember { mutableStateOf(0) }
     var showPriceList by remember { mutableStateOf(false) }
     Scaffold(
@@ -66,8 +69,10 @@ fun AddOrderParametersScreen() {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
+                            modifier = Modifier.clickable { onBack() },
                             painter = painterResource(R.drawable.back_arrow_ic),
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = AppTheme.colors.black9
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
@@ -78,6 +83,7 @@ fun AddOrderParametersScreen() {
                         )
                     }
                     Icon(
+                        modifier = Modifier.clickable { onAbout() },
                         painter = painterResource(R.drawable.info_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -122,7 +128,8 @@ fun AddOrderParametersScreen() {
                         .padding(vertical = 4.dp, horizontal = 8.dp),
                     text = String.format(stringResource(R.string.total_price), totalPrice),
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppTheme.colors.black9
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 Comment()
@@ -394,5 +401,5 @@ private fun Comment() {
 @Preview(showBackground = true)
 @Composable
 private fun AddOrderParametersScreenPreview() {
-    AddOrderParametersScreen()
+    AddOrderParametersScreen({}, {})
 }

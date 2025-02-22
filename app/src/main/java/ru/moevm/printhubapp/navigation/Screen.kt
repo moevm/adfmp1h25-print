@@ -8,6 +8,7 @@ sealed class Screen(val route: String) {
 
     object MainClientScreen : Screen(ROUTER_MAIN_CLIENT_SCREEN)
     object AddOrderScreen : Screen(ROUTER_ADD_ORDER_SCREEN)
+    object AddOrderParametersScreen : Screen(ROUTER_ADD_ORDER_PARAMETERS_SCREEN)
 
 
 
@@ -19,5 +20,6 @@ sealed class Screen(val route: String) {
 
         private const val ROUTER_MAIN_CLIENT_SCREEN = "main_client_screen"
         private const val ROUTER_ADD_ORDER_SCREEN = "add_order_screen"
+        private const val ROUTER_ADD_ORDER_PARAMETERS_SCREEN = " add_order_parameters_screen"
     }
 }

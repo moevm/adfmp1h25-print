@@ -39,7 +39,8 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 @Composable
 fun AddOrderScreen(
     onAbout: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateTo: () -> Unit
 ) {
     var search by remember { mutableStateOf("")}
     Scaffold(
@@ -144,7 +145,9 @@ fun AddOrderScreen(
                 ) {
                     for(i in 0..5) {
                         item {
-                            PrintHubCard()
+                            PrintHubCard(
+                                onNavigateTo = onNavigateTo
+                            )
                         }
                     }
                 }
@@ -156,5 +159,5 @@ fun AddOrderScreen(
 @Preview(showBackground = true)
 @Composable
 private fun AddOrderScreenPreview() {
-    AddOrderScreen({}, {})
+    AddOrderScreen({}, {}, {})
 }
