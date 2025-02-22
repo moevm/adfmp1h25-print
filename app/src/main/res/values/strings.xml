@@ -78,6 +78,19 @@
     <string name="reason_reject">Причина отказа</string>
     <!--    END     -->
 
+    <!--    Client Profile Screen   -->
+    <string name="client_profile_title">Профиль</string>
+    <string name="name_title">Имя: %s</string>
+    <string name="mail_title">Почта: %s</string>
+    <string name="logout">Выйти из аккаунта</string>
+    <!--    END     -->
+
+    <!--    Logout Dialog   -->
+    <string name="logout_dialog_title">Выйти?</string>
+    <string name="logout_button">Выйти</string>
+    <string name="reject_button">Отмена</string>
+    <!--    END     -->
+
 
 
 
