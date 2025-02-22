@@ -2,6 +2,7 @@ package ru.moevm.printhubapp.presentation.client
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +41,9 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
 fun OrderDetailsScreen(
-    idOrder: Int
+    idOrder: Int,
+    onBack: () -> Unit,
+    onAbout: () -> Unit
 ) {
     var totalPrice by remember { mutableStateOf(90) }
     val isReject = true
@@ -62,8 +65,10 @@ fun OrderDetailsScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
+                            modifier = Modifier.clickable { onBack() },
                             painter = painterResource(R.drawable.back_arrow_ic),
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = AppTheme.colors.black9
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
@@ -77,6 +82,7 @@ fun OrderDetailsScreen(
                         )
                     }
                     Icon(
+                        modifier = Modifier.clickable { onAbout() },
                         painter = painterResource(R.drawable.info_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -134,7 +140,8 @@ fun OrderDetailsScreen(
                     .padding(vertical = 4.dp, horizontal = 8.dp),
                 text = String.format(stringResource(R.string.total_price), totalPrice),
                 fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = AppTheme.colors.black9
             )
             Spacer(Modifier.height(16.dp))
             Comment(
@@ -234,5 +241,5 @@ private fun Comment(
 @Preview(showBackground = true)
 @Composable
 private fun OrderDetailsScreenPreview() {
-    OrderDetailsScreen(idOrder = 1)
+    OrderDetailsScreen(idOrder = 1, {}, {})
 }
