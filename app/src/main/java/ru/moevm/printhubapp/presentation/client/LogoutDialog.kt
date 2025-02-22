@@ -24,6 +24,7 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
 fun LogoutDialog(
+    onLogout: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     Dialog(
@@ -41,11 +42,12 @@ fun LogoutDialog(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     text = stringResource(R.string.logout_dialog_title),
                     fontSize = 24.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = AppTheme.colors.black9
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
-                    onClick = { TODO() },
+                    onClick = onLogout,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = AppTheme.colors.orange10,
@@ -62,7 +64,7 @@ fun LogoutDialog(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
-                    onClick = { TODO() },
+                    onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = AppTheme.colors.gray1,
@@ -85,5 +87,5 @@ fun LogoutDialog(
 @Preview(showBackground = true)
 @Composable
 private fun LogoutDialogPreview() {
-    LogoutDialog({})
+    LogoutDialog({}, {})
 }

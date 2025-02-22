@@ -20,6 +20,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,11 +30,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
 fun MainClientScreen(
+    navHostController: NavHostController,
     onAbout: () -> Unit,
     addOrder: () -> Unit,
     showOrderDetails: () -> Unit
@@ -79,15 +85,22 @@ fun MainClientScreen(
                 NavigationBar(
                     containerColor = AppTheme.colors.orange10,
                 ) {
+                    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
                     val items = listOf(
                         NavigationItem.Home,
                         NavigationItem.Profile
                     )
-                    val selected = true //TODO()
                     items.forEach { item ->
+                        val selected = navBackStackEntry?.destination?.hierarchy?.any {
+                            it.route == item.screen.route
+                        } ?: false
                         NavigationBarItem(
                             selected = selected,
-                            onClick = { TODO() },
+                            onClick = {
+                                if (!selected) {
+                                    navHostController.navigate(item.screen.route)
+                                }
+                            },
                             label = {
                                 Text(
                                     text = stringResource(item.titleResId),
@@ -121,7 +134,7 @@ fun MainClientScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                for(i in 0..5) {
+                for (i in 0..5) {
                     item {
                         OrderCard(showOrderDetails)
                     }
@@ -148,5 +161,6 @@ fun MainClientScreen(
 @Preview(showBackground = true)
 @Composable
 private fun MainClientScreenPreview() {
-    MainClientScreen({}, {}, {})
+    val navHostController = rememberNavController()
+    MainClientScreen(navHostController, {}, {}, {})
 }

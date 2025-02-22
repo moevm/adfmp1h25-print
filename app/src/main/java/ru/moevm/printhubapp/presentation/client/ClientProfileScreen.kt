@@ -1,13 +1,12 @@
 package ru.moevm.printhubapp.presentation.client
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -17,6 +16,10 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,11 +29,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun ClientProfileScreen() {
+fun ClientProfileScreen(
+    navHostController: NavHostController,
+    onAbout: () -> Unit,
+    onLogout: () -> Unit
+) {
+    var showLogoutDialog by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             Column(
@@ -46,22 +58,14 @@ fun ClientProfileScreen() {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.back_arrow_ic),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = stringResource(R.string.client_profile_title),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = AppTheme.colors.black9
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.client_profile_title),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = AppTheme.colors.black9
+                    )
                     Icon(
+                        modifier = Modifier.clickable { onAbout() },
                         painter = painterResource(R.drawable.info_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -80,15 +84,22 @@ fun ClientProfileScreen() {
                 NavigationBar(
                     containerColor = AppTheme.colors.orange10,
                 ) {
+                    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
                     val items = listOf(
                         NavigationItem.Home,
                         NavigationItem.Profile
                     )
-                    val selected = true //TODO()
                     items.forEach { item ->
+                        val selected = navBackStackEntry?.destination?.hierarchy?.any {
+                            it.route == item.screen.route
+                        } ?: false
                         NavigationBarItem(
                             selected = selected,
-                            onClick = { TODO() },
+                            onClick = {
+                                if(!selected) {
+                                    navHostController.navigate(item.screen.route)
+                                }
+                            },
                             label = {
                                 Text(
                                     text = stringResource(item.titleResId),
@@ -125,9 +136,23 @@ fun ClientProfileScreen() {
             InfoRow(
                 titleId = R.string.logout,
                 isNavigate = true,
-                color = AppTheme.colors.red
+                color = AppTheme.colors.red,
+                onLogout = {
+                    showLogoutDialog = true
+                }
             )
         }
+    }
+    if (showLogoutDialog) {
+        LogoutDialog(
+            onLogout = {
+                showLogoutDialog = false
+                onLogout()
+            },
+            onDismiss = {
+                showLogoutDialog = false
+            }
+        )
     }
 }
 
@@ -136,13 +161,18 @@ private fun InfoRow(
     titleId: Int,
     param: String = "",
     color: Color = AppTheme.colors.black9,
-    isNavigate: Boolean = false
+    isNavigate: Boolean = false,
+    onLogout: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ){
         Row(
-            modifier = Modifier.padding(vertical = 16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .fillMaxWidth()
+                .clickable { onLogout() }
+            ,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -155,7 +185,8 @@ private fun InfoRow(
             if (isNavigate) {
                 Icon(
                     painter = painterResource(R.drawable.right_arrow_ic),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = AppTheme.colors.black9
                 )
             }
         }
@@ -166,5 +197,6 @@ private fun InfoRow(
 @Preview(showBackground = true)
 @Composable
 private fun ClientProfilePreview() {
-    ClientProfileScreen()
+    val navHostController = rememberNavController()
+    ClientProfileScreen(navHostController, {}, {})
 }

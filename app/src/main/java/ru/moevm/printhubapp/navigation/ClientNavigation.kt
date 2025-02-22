@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import ru.moevm.printhubapp.presentation.client.AddOrderParametersScreen
 import ru.moevm.printhubapp.presentation.client.AddOrderScreen
+import ru.moevm.printhubapp.presentation.client.ClientProfileScreen
 import ru.moevm.printhubapp.presentation.client.MainClientScreen
 import ru.moevm.printhubapp.presentation.client.OrderDetailsScreen
 import ru.moevm.printhubapp.presentation.client.SuccessOrderScreen
@@ -12,6 +13,7 @@ import ru.moevm.printhubapp.presentation.client.SuccessOrderScreen
 fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
     composable(route = Screen.MainClientScreen.route) {
         MainClientScreen(
+            navHostController = navHostController,
             onAbout = {
                 navHostController.navigate(Screen.AboutScreen.route)
             },
@@ -79,6 +81,23 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
             onAbout = {
                 navHostController.navigate(Screen.AboutScreen.route)
             },
+        )
+    }
+    composable(
+        route = Screen.ClientProfileScreen.route
+    ) {
+        ClientProfileScreen(
+            navHostController = navHostController,
+            onAbout = {
+                navHostController.navigate(Screen.AboutScreen.route)
+            },
+            onLogout = {
+                navHostController.navigate(Screen.AuthScreen.route) {
+                    popUpTo(Screen.ClientProfileScreen.route) {
+                        inclusive = true
+                    }
+                }
+            }
         )
     }
 }
