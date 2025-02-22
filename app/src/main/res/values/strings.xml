@@ -50,9 +50,9 @@
     <string name="A1">A1</string>
     <string name="A2">A2</string>
     <string name="A3">A3</string>
-    <string name="A4">A5</string>
-    <string name="A5">A6</string>
-    <string name="A6">A7</string>
+    <string name="A4">A4</string>
+    <string name="A5">A5</string>
+    <string name="A6">A6</string>
     <string name="show_price">Посмотреть прайс-лист</string>
     <string name="select_format_print">Выберите формат печати</string>
     <string name="count_list">Количество листов</string>
