@@ -43,17 +43,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
+import ru.moevm.printhubapp.utils.LIMIT_CHAR
 
 @Composable
-fun AddOrderParametersScreen() {
+fun AddOrderParametersScreen(
+    onBack: () -> Unit,
+    onAbout: () -> Unit,
+    createOrder: () -> Unit
+) {
     var totalPrice by remember { mutableStateOf(0) }
     var showPriceList by remember { mutableStateOf(false) }
+    var selectedDropMenu by remember { mutableStateOf(R.string.select_format_print) }
+    var printFormat by remember { mutableStateOf(PrintFormatItem.A1) }
+    var countList by remember { mutableStateOf(1) }
     Scaffold(
         topBar = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(AppTheme.colors.orange10)
+                    .padding(top = 32.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -66,8 +75,10 @@ fun AddOrderParametersScreen() {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
+                            modifier = Modifier.clickable { onBack() },
                             painter = painterResource(R.drawable.back_arrow_ic),
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = AppTheme.colors.black9
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
@@ -78,6 +89,7 @@ fun AddOrderParametersScreen() {
                         )
                     }
                     Icon(
+                        modifier = Modifier.clickable { onAbout() },
                         painter = painterResource(R.drawable.info_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -109,12 +121,25 @@ fun AddOrderParametersScreen() {
                         .align(Alignment.Start),
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                ChooseFormatPrint()
+                ChooseFormatPrint(
+                    currentId = selectedDropMenu
+                ){ new ->
+                    selectedDropMenu = new.value
+                    printFormat = new
+                    totalPrice = printFormat.price * countList
+                }
                 Spacer(modifier = Modifier.height(8.dp))
-                ChooseCountList()
+                ChooseCountList(
+                    currentCountList = countList
+                ) { newCount ->
+                    countList = newCount
+                }
                 Spacer(modifier = Modifier.height(8.dp))
                 ChooseFile()
                 Spacer(modifier = Modifier.height(16.dp))
+                if(selectedDropMenu != R.string.select_format_print) {
+                    totalPrice = printFormat.price * countList
+                }
                 Text(
                     modifier = Modifier
                         .align(Alignment.End)
@@ -122,13 +147,16 @@ fun AddOrderParametersScreen() {
                         .padding(vertical = 4.dp, horizontal = 8.dp),
                     text = String.format(stringResource(R.string.total_price), totalPrice),
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppTheme.colors.black9
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 Comment()
             }
+            val isEnable = (selectedDropMenu != R.string.select_format_print)
             Button(
-                onClick = { TODO() },
+                onClick = createOrder,
+                enabled = isEnable,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppTheme.colors.orange10,
@@ -177,9 +205,11 @@ private fun ShowPrice(
 }
 
 @Composable
-private fun ChooseFormatPrint() {
+private fun ChooseFormatPrint(
+    currentId: Int,
+    updateFormatPrint: (new: PrintFormatItem) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedDropMenu by remember { mutableStateOf(R.string.select_format_print) }
     var buttonWidth by remember { mutableStateOf(0) }
     Box(modifier = Modifier.fillMaxWidth()) {
         Button(
@@ -204,10 +234,10 @@ private fun ChooseFormatPrint() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val color =
-                    if (selectedDropMenu == R.string.select_format_print) AppTheme.colors.gray7
+                    if (currentId == R.string.select_format_print) AppTheme.colors.gray7
                     else AppTheme.colors.black9
                 Text(
-                    text = stringResource(selectedDropMenu),
+                    text = stringResource(currentId),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
                     color = color
@@ -227,7 +257,7 @@ private fun ChooseFormatPrint() {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            PrintFormatItem.entries.forEach() {
+            PrintFormatItem.entries.forEach {
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -238,7 +268,7 @@ private fun ChooseFormatPrint() {
                         )
                     },
                     onClick = {
-                        selectedDropMenu = it.value
+                        updateFormatPrint(it)
                         expanded = false
                     }
                 )
@@ -248,8 +278,10 @@ private fun ChooseFormatPrint() {
 }
 
 @Composable
-private fun ChooseCountList() {
-    var countList by remember { mutableStateOf(1) }
+private fun ChooseCountList(
+    currentCountList: Int,
+    updateCountList: (newCount: Int) -> Unit
+) {
     Button(
         modifier = Modifier
             .fillMaxWidth(),
@@ -280,14 +312,14 @@ private fun ChooseCountList() {
             ) {
                 Icon(
                     modifier = Modifier
-                        .clickable { if (countList != 1) countList-- },
+                        .clickable { if (currentCountList != 1)  updateCountList(currentCountList-1) },
                     painter = painterResource(R.drawable.minus_ic),
                     contentDescription = null,
                     tint = AppTheme.colors.black9
                 )
                 Text(
                     modifier = Modifier.padding(horizontal = 12.dp),
-                    text = countList.toString(),
+                    text = currentCountList.toString(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = AppTheme.colors.black9
@@ -295,7 +327,7 @@ private fun ChooseCountList() {
                 Icon(
                     modifier = Modifier
                         .size(20.dp)
-                        .clickable { countList++ },
+                        .clickable { updateCountList(currentCountList + 1) },
                     painter = painterResource(R.drawable.add_ic),
                     contentDescription = null,
                     tint = AppTheme.colors.black9
@@ -394,5 +426,5 @@ private fun Comment() {
 @Preview(showBackground = true)
 @Composable
 private fun AddOrderParametersScreenPreview() {
-    AddOrderParametersScreen()
+    AddOrderParametersScreen({}, {}, {})
 }

@@ -3,15 +3,11 @@ package ru.moevm.printhubapp.presentation.client
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -21,12 +17,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,12 +37,12 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun MainClientScreen(
+fun ClientProfileScreen(
     navHostController: NavHostController,
     onAbout: () -> Unit,
-    addOrder: () -> Unit,
-    showOrderDetails: () -> Unit
+    onLogout: () -> Unit
 ) {
+    var showLogoutDialog by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             Column(
@@ -60,7 +59,7 @@ fun MainClientScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = stringResource(R.string.main_title),
+                        text = stringResource(R.string.client_profile_title),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = AppTheme.colors.black9
@@ -97,7 +96,7 @@ fun MainClientScreen(
                         NavigationBarItem(
                             selected = selected,
                             onClick = {
-                                if (!selected) {
+                                if(!selected) {
                                     navHostController.navigate(item.screen.route)
                                 }
                             },
@@ -119,48 +118,85 @@ fun MainClientScreen(
             }
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
+                .padding(paddingValues)
+                .padding(16.dp)
+                .background(AppTheme.colors.gray1, RoundedCornerShape(16.dp))
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-            LazyColumn(
-                contentPadding = PaddingValues(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                for (i in 0..5) {
-                    item {
-                        OrderCard(showOrderDetails)
-                    }
+            InfoRow(
+                titleId = R.string.name_title,
+                param = "Клиент"
+            )
+            InfoRow(
+                titleId = R.string.mail_title,
+                param = "test_user@mail.ru"
+            )
+            InfoRow(
+                titleId = R.string.logout,
+                isNavigate = true,
+                color = AppTheme.colors.red,
+                onLogout = {
+                    showLogoutDialog = true
                 }
+            )
+        }
+    }
+    if (showLogoutDialog) {
+        LogoutDialog(
+            onLogout = {
+                showLogoutDialog = false
+                onLogout()
+            },
+            onDismiss = {
+                showLogoutDialog = false
             }
-            FloatingActionButton(
-                onClick = { addOrder() },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                shape = CircleShape,
-                containerColor = AppTheme.colors.orange10,
-                contentColor = AppTheme.colors.black9
-            ) {
+        )
+    }
+}
+
+@Composable
+private fun InfoRow(
+    titleId: Int,
+    param: String = "",
+    color: Color = AppTheme.colors.black9,
+    isNavigate: Boolean = false,
+    onLogout: () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ){
+        Row(
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .fillMaxWidth()
+                .clickable { onLogout() }
+            ,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = String.format(stringResource(titleId), param),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Medium,
+                color = color
+            )
+            if (isNavigate) {
                 Icon(
-                    painter = painterResource(R.drawable.add_ic),
-                    contentDescription = null
+                    painter = painterResource(R.drawable.right_arrow_ic),
+                    contentDescription = null,
+                    tint = AppTheme.colors.black9
                 )
             }
         }
+        HorizontalDivider(color = AppTheme.colors.black9)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun MainClientScreenPreview() {
+private fun ClientProfilePreview() {
     val navHostController = rememberNavController()
-    MainClientScreen(navHostController, {}, {}, {})
+    ClientProfileScreen(navHostController, {}, {})
 }

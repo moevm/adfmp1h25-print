@@ -59,8 +59,8 @@ fun RegistrationScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                top = 16.dp,
-                bottom = 32.dp,
+                top = 32.dp,
+                bottom = 48.dp,
                 start = 16.dp,
                 end = 16.dp
             ),
