@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
+import ru.moevm.printhubapp.utils.LIMIT_CHAR
 
 @Composable
 fun AddOrderParametersScreen(
@@ -61,6 +62,7 @@ fun AddOrderParametersScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(AppTheme.colors.orange10)
+                    .padding(top = 32.dp)
             ) {
                 Row(
                     modifier = Modifier

@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,13 +30,14 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun ClientProfile() {
+fun ClientProfileScreen() {
     Scaffold(
         topBar = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(AppTheme.colors.orange10)
+                    .padding(top = 32.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -66,6 +70,40 @@ fun ClientProfile() {
                 HorizontalDivider(
                     color = AppTheme.colors.black9
                 )
+            }
+        },
+        bottomBar = {
+            Column {
+                HorizontalDivider(
+                    color = AppTheme.colors.black9
+                )
+                NavigationBar(
+                    containerColor = AppTheme.colors.orange10,
+                ) {
+                    val items = listOf(
+                        NavigationItem.Home,
+                        NavigationItem.Profile
+                    )
+                    val selected = true //TODO()
+                    items.forEach { item ->
+                        NavigationBarItem(
+                            selected = selected,
+                            onClick = { TODO() },
+                            label = {
+                                Text(
+                                    text = stringResource(item.titleResId),
+                                    fontSize = 20.sp
+                                )
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedTextColor = AppTheme.colors.black9,
+                                unselectedTextColor = AppTheme.colors.gray7,
+                                indicatorColor = Color.Transparent
+                            ),
+                            icon = {}
+                        )
+                    }
+                }
             }
         }
     ) { paddingValues ->
@@ -128,5 +166,5 @@ private fun InfoRow(
 @Preview(showBackground = true)
 @Composable
 private fun ClientProfilePreview() {
-    ClientProfile()
+    ClientProfileScreen()
 }

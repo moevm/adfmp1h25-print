@@ -53,6 +53,7 @@ fun OrderDetailsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(AppTheme.colors.orange10)
+                    .padding(top = 32.dp)
             ) {
                 Row(
                     modifier = Modifier
