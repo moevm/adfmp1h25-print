@@ -47,7 +47,8 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 @Composable
 fun AddOrderParametersScreen(
     onBack: () -> Unit,
-    onAbout: () -> Unit
+    onAbout: () -> Unit,
+    createOrder: () -> Unit
 ) {
     var totalPrice by remember { mutableStateOf(0) }
     var showPriceList by remember { mutableStateOf(false) }
@@ -152,7 +153,7 @@ fun AddOrderParametersScreen(
             }
             val isEnable = (selectedDropMenu != R.string.select_format_print)
             Button(
-                onClick = { TODO() },
+                onClick = createOrder,
                 enabled = isEnable,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
@@ -423,5 +424,5 @@ private fun Comment() {
 @Preview(showBackground = true)
 @Composable
 private fun AddOrderParametersScreenPreview() {
-    AddOrderParametersScreen({}, {})
+    AddOrderParametersScreen({}, {}, {})
 }

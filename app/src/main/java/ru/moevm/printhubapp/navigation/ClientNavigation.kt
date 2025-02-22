@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import ru.moevm.printhubapp.presentation.client.AddOrderParametersScreen
 import ru.moevm.printhubapp.presentation.client.AddOrderScreen
 import ru.moevm.printhubapp.presentation.client.MainClientScreen
+import ru.moevm.printhubapp.presentation.client.SuccessOrderScreen
 
 fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
     composable(route = Screen.MainClientScreen.route) {
@@ -45,6 +46,23 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
             onBack = {
                 navHostController.popBackStack()
             },
+            createOrder = {
+                navHostController.navigate(Screen.SuccessScreen.route)
+            }
+        )
+    }
+
+    composable(
+        route = Screen.SuccessScreen.route
+    ) {
+        SuccessOrderScreen(
+            onNavigateHome = {
+                navHostController.navigate(Screen.MainClientScreen.route) {
+                    popUpTo(Screen.SuccessScreen.route) {
+                        inclusive = true
+                    }
+                }
+            }
         )
     }
 }
