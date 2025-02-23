@@ -9,6 +9,8 @@ lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
 composeBom = "2024.04.01"
 navigationCompose = "2.8.0"
+firebase = "32.5.0"
+googleServices = "4.4.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,8 +30,11 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
+firebase = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase"}
+firebase_auth = { group = "com.google.firebase", name = "firebase-auth-ktx"}
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+google_services = { id = "com.google.gms.google-services", version.ref = "googleServices"}
