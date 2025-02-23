@@ -1,10 +1,11 @@
-package ru.moevm.printhubapp.domain.entity
+package ru.moevm.printhubapp.data.model
 
-data class Registration(
+import ru.moevm.printhubapp.domain.entity.Role
+
+data class User(
     val mail: String,
     val password: String,
     val role: Role,
     val nameCompany: String = "",
     val address: String = ""
 )
-
