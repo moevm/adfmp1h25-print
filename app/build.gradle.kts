@@ -62,4 +62,5 @@ dependencies {
 
     implementation(platform(libs.firebase))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.store)
 }
