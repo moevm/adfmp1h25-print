@@ -33,7 +33,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.domain.entity.Auth
+import ru.moevm.printhubapp.presentation.auth.viewmodels.AuthViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
@@ -42,6 +45,7 @@ fun AuthScreen(
     onRegistration: () -> Unit,
     onAbout: () -> Unit
 ) {
+    val viewModel: AuthViewModel = hiltViewModel()
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Column(
@@ -138,7 +142,15 @@ fun AuthScreen(
         }
         val isEnable = (login.isNotEmpty() && password.isNotEmpty())
         Button(
-            onClick = { onLoginTo() },
+            onClick = {
+                onLoginTo()
+                viewModel.authorization(
+                    Auth(
+                        mail = login,
+                        password = password
+                    )
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             enabled = isEnable,
             colors = ButtonDefaults.buttonColors(

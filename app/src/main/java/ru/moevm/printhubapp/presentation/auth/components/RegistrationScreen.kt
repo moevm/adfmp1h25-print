@@ -39,8 +39,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.domain.entity.Registration
 import ru.moevm.printhubapp.domain.entity.Role
+import ru.moevm.printhubapp.presentation.auth.viewmodels.AuthViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
@@ -48,6 +51,7 @@ fun RegistrationScreen(
     onRegistration: () -> Unit,
     onAbout: () -> Unit
 ) {
+    val viewModel: AuthViewModel = hiltViewModel()
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
@@ -170,8 +174,9 @@ fun RegistrationScreen(
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val color = if (selectedDropMenu == R.string.select_role) AppTheme.colors.gray7
-                        else AppTheme.colors.black9
+                        val color =
+                            if (selectedDropMenu == R.string.select_role) AppTheme.colors.gray7
+                            else AppTheme.colors.black9
                         Text(
                             text = stringResource(selectedDropMenu),
                             fontSize = 20.sp,
@@ -288,7 +293,18 @@ fun RegistrationScreen(
             }
 
         Button(
-            onClick = { onRegistration() },
+            onClick = {
+                onRegistration()
+                viewModel.registration(
+                    Registration(
+                        mail = login,
+                        password = password,
+                        role = role,
+                        nameCompany = nameCompany,
+                        address = address
+                    )
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             enabled = isEnable,
             colors = ButtonDefaults.buttonColors(

@@ -1,16 +1,15 @@
 package ru.moevm.printhubapp.data.repository
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import ru.moevm.printhubapp.data.model.UserDto
 import ru.moevm.printhubapp.domain.entity.Auth
 import ru.moevm.printhubapp.domain.entity.Registration
-import ru.moevm.printhubapp.domain.entity.Role
 import ru.moevm.printhubapp.domain.entity.result.RequestError
 import ru.moevm.printhubapp.domain.entity.result.RequestResult
 import ru.moevm.printhubapp.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 
 class AuthRepositoryImpl(
     private val auth: FirebaseAuth,
@@ -18,34 +17,28 @@ class AuthRepositoryImpl(
 ) : AuthRepository {
 
     private val users = db.collection("users")
-    private val _users = MutableLiveData(
-        listOf(
-            UserDto(
-                mail = "test_client@mail.ru",
-                password = "1",
-                role = Role.CLIENT
-            ),
-            UserDto(
-                mail = "test_printhub@mail.ru",
-                password = "1",
-                role = Role.PRINTHUB,
-                address = "Санкт-Петербург, ул. Попова 5Б",
-                nameCompany = "Хамелеон"
-            )
-        )
-    )
 
     override fun authorization(user: Auth): RequestResult<Unit> {
-        val existingUser = _users.value?.find { it.mail == user.mail }
-        if (existingUser != null) {
-            if (existingUser.password == user.password) {
-                return RequestResult.Success(Unit)
-            } else {
-                return RequestResult.Error(RequestError.InvalidPassword)
+        auth.signInWithEmailAndPassword(user.mail, user.password)
+            .addOnCompleteListener { task ->
+                if(task.isSuccessful) {
+                    val currentUserId = auth.currentUser?.uid ?: ""
+                    users.document(currentUserId).get()
+                        .addOnSuccessListener { document ->
+                            if(document != null) {
+                                val currentUser = document.toObject<UserDto>()
+                                Log.d("AUTH", currentUser.toString())
+                            } else {
+                                Log.d("AUTH", "ERROR")
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.d("AUTH", e.message.toString())
+                        }
+
+                }
             }
-        } else {
-            return RequestResult.Error(RequestError.UserNotFount)
-        }
+        return RequestResult.Success(Unit)
     }
 
     override fun registration(newUser: Registration): RequestResult<Unit> {
