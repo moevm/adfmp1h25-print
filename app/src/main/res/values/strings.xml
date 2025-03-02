@@ -105,6 +105,13 @@
     <string name="statistics_title">Статистика</string>
     <!--    END     -->
 
+    <!--   Order Details Printhub Screen  -->
+    <string name="take_order_button_text">Взять в работу</string>
+    <string name="reject_order_button">Отказаться</string>
+    <string name="finish_button">Завершить</string>
+    <string name="finish_order_button">Завершить заказ</string>
+    <!--    END     -->
+
 
 
 </resources>
