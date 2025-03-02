@@ -22,6 +22,10 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +44,7 @@ fun OrderDetailsPrinthubScreen(
     idOrder: Int,
 ) {
     val isReject = false
+    var isVisibleRejectDialog by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             Column(
@@ -175,7 +180,7 @@ fun OrderDetailsPrinthubScreen(
                 }
                 Spacer(Modifier.height(16.dp))
                 Button(
-                    onClick = {  },
+                    onClick = { isVisibleRejectDialog = true },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = AppTheme.colors.gray2,
@@ -185,13 +190,16 @@ fun OrderDetailsPrinthubScreen(
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
-                        text = stringResource(R.string.reject_button),
+                        text = stringResource(R.string.reject_order_button),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium
                     )
                 }
             }
         }
+    }
+    if (isVisibleRejectDialog) {
+        RejectDialog { isVisibleRejectDialog = false }
     }
 }
 

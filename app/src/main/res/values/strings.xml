@@ -112,6 +112,11 @@
     <string name="finish_order_button">Завершить заказ</string>
     <!--    END     -->
 
+    <!--    Reject Dialog   -->
+    <string name="reject_dialog_title">Причина отказа</string>
+    <string name="required_param">*Обзательный комментарий</string>
+    <!--    END     -->
+
 
 
 </resources>
