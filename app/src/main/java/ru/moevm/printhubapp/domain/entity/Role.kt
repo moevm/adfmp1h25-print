@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.auth
+package ru.moevm.printhubapp.domain.entity
 
 enum class Role {
     INIT,
