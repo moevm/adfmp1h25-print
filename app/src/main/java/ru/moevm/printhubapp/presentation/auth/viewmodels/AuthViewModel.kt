@@ -19,12 +19,34 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun registration(newUser: Registration) {
-        registrationUseCase(newUser)
+         val validationError = validateCredentials(newUser.mail, newUser.password)
+        if (validationError != null) {
+            Log.e("AUTH", validationError)
+            return
+        }
+
+        registrationUseCase(newUser) { result ->
+            when (result) {
+                is RequestResult.Success -> {
+                    Log.d("AUTH", "Регистрация успешна!")
+                }
+                is RequestResult.Error -> {
+                    when (result.error) {
+                        is RequestError.UserAlreadyExists -> Log.e("AUTH", "Пользователь уже зарегистрирован")
+                        is RequestError.InvalidEmail -> Log.e("AUTH", "Некорректный email")
+                        is RequestError.WeakPassword -> Log.e("AUTH", "Пароль слишком слабый")
+                        is RequestError.InvalidCredentials -> Log.e("AUTH", "Ошибка: ${result.error.reason}")
+                        is RequestError.Server -> Log.e("AUTH", "Ошибка сервера: ${result.error.errorMessage}")
+                        else -> Log.e("AUTH", "Неизвестная ошибка")
+                    }
+                }
+            }
+        }
     }
     fun authorization(user: Auth) {
-        val validationError = validateCredentials(user)
+        val validationError = validateCredentials(user.mail, user.password)
         if (validationError != null) {
-            Log.e("AUTH", validationError) // Логируем ошибку
+            Log.e("AUTH", validationError)
             return
         }
 
@@ -45,11 +67,11 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun validateCredentials(user: Auth): String? {
-        if (!Patterns.EMAIL_ADDRESS.matcher(user.mail).matches()) {
+    private fun validateCredentials(mail: String, password: String): String? {
+        if (!Patterns.EMAIL_ADDRESS.matcher(mail).matches()) {
             return "Некорректный формат почты"
         }
-        if (user.password.length < 6) {
+        if (password.length < 6) {
             return "Пароль должен содержать не менее 6 символов"
         }
         return null

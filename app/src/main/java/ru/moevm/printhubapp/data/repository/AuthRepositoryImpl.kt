@@ -1,7 +1,6 @@
 package ru.moevm.printhubapp.data.repository
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.core.content.edit
 import ru.moevm.printhubapp.domain.entity.Auth
 import ru.moevm.printhubapp.domain.entity.Registration
@@ -11,6 +10,8 @@ import ru.moevm.printhubapp.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestore
 
 class AuthRepositoryImpl(
@@ -53,32 +54,41 @@ class AuthRepositoryImpl(
             }
     }
 
-    override fun registration(newUser: Registration): RequestResult<Unit> {
-
-        val user = mapOf(
-            "mail" to newUser.mail,
-            "password" to newUser.password,
-            "role" to newUser.role,
-            "address" to newUser.address,
-            "nameCompany" to newUser.nameCompany
-        )
-
+    override fun registration(newUser: Registration, callback: (RequestResult<Unit>) -> Unit) {
         auth.createUserWithEmailAndPassword(newUser.mail, newUser.password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d("AUTH", "createUserWithEmail:success::${task.result.user?.uid}")
-                    users.document(task.result.user?.uid.toString()).set(user)
-                    val currentUser = auth.currentUser
-                    if (currentUser != null) {
-                        Log.d("AUTH", "auth")
-                    } else {
-                        Log.d("AUTH", "not auth")
+                    val currentUserId = auth.currentUser?.uid ?: ""
+
+                    sharedPreferences.edit {
+                        putString(UID_STRING, currentUserId)
                     }
+
+                    val user = mapOf(
+                        "id" to currentUserId,
+                        "mail" to newUser.mail,
+                        "role" to newUser.role,
+                        "address" to newUser.address,
+                        "nameCompany" to newUser.nameCompany
+                    )
+
+                    users.document(currentUserId).set(user)
+                        .addOnSuccessListener {
+                            callback(RequestResult.Success(Unit))
+                        }
+                        .addOnFailureListener { e ->
+                            callback(RequestResult.Error(RequestError.Server("Ошибка сохранения данных: ${e.message}")))
+                        }
                 } else {
-                    Log.w("AUTH", "createUserWithEmail:failure", task.exception)
+                    val error = when (task.exception) {
+                        is FirebaseAuthUserCollisionException -> RequestError.UserAlreadyExists
+                        is FirebaseAuthWeakPasswordException -> RequestError.WeakPassword
+                        is FirebaseAuthInvalidCredentialsException -> RequestError.InvalidEmail
+                        else -> RequestError.Server(task.exception?.message ?: "Unknown error")
+                    }
+                    callback(RequestResult.Error(error))
                 }
             }
-        return RequestResult.Error(RequestError.UserNotFound)
     }
 
     companion object {

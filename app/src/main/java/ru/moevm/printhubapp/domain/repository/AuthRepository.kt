@@ -6,5 +6,5 @@ import ru.moevm.printhubapp.domain.entity.result.RequestResult
 
 interface AuthRepository {
     fun authorization(user: Auth, callback: (RequestResult<Unit>) -> Unit)
-    fun registration(newUser: Registration) : RequestResult<Unit>
+    fun registration(newUser: Registration, callback: (RequestResult<Unit>) -> Unit)
 }
