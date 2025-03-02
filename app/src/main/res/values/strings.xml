@@ -99,6 +99,12 @@
     <string name="placeholder_choose_order_number">Введите номер заказа</string>
     <!--    END     -->
 
+    <!--    Profile Printhub Screen   -->
+    <string name="name_printhub_title">Печатный центр: %s</string>
+    <string name="address_title">Адрес: %s</string>
+    <string name="statistics_title">Статистика</string>
+    <!--    END     -->
+
 
 
 </resources>
