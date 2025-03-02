@@ -91,6 +91,13 @@
     <string name="reject_button">Отмена</string>
     <!--    END     -->
 
+    <!--    Order printhub card  -->
+    <string name="status_new">Новый</string>
+    <!--    END     -->
+
+    <!--    Main Printhub Screen    -->
+    <string name="placeholder_choose_order_number">Введите номер заказа</string>
+    <!--    END     -->
 
 
 
