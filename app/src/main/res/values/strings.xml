@@ -117,6 +117,14 @@
     <string name="required_param">*Обзательный комментарий</string>
     <!--    END     -->
 
+    <!--    Statistic Screen   -->
+    <string name="statistic_screen_title">Статистика</string>
+    <string name="list_title">Расход бумаги: %s мл</string>
+    <string name="toner_title">Расход тонера: %s мл</string>
+    <string name="profit_title">Доход: %s ₽</string>
+    <string name="price_printer_title">Цена принтера: 5000 ₽</string>
+    <!--    END     -->
+
 
 
 </resources>
