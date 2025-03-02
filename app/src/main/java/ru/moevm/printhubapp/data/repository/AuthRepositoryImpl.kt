@@ -1,44 +1,56 @@
 package ru.moevm.printhubapp.data.repository
 
+import android.content.SharedPreferences
 import android.util.Log
-import ru.moevm.printhubapp.data.model.UserDto
+import androidx.core.content.edit
 import ru.moevm.printhubapp.domain.entity.Auth
 import ru.moevm.printhubapp.domain.entity.Registration
 import ru.moevm.printhubapp.domain.entity.result.RequestError
 import ru.moevm.printhubapp.domain.entity.result.RequestResult
 import ru.moevm.printhubapp.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 
 class AuthRepositoryImpl(
     private val auth: FirebaseAuth,
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val sharedPreferences: SharedPreferences
 ) : AuthRepository {
 
     private val users = db.collection("users")
 
-    override fun authorization(user: Auth): RequestResult<Unit> {
+    override fun authorization(user: Auth, callback: (RequestResult<Unit>) -> Unit) {
         auth.signInWithEmailAndPassword(user.mail, user.password)
             .addOnCompleteListener { task ->
-                if(task.isSuccessful) {
+                if (task.isSuccessful) {
                     val currentUserId = auth.currentUser?.uid ?: ""
+
+                    sharedPreferences.edit {
+                        putString(UID_STRING, currentUserId)
+                    }
+
                     users.document(currentUserId).get()
                         .addOnSuccessListener { document ->
-                            if(document != null) {
-                                val currentUser = document.toObject<UserDto>()
-                                Log.d("AUTH", currentUser.toString())
+                            if (document.exists()) {
+                                callback(RequestResult.Success(Unit))
                             } else {
-                                Log.d("AUTH", "ERROR")
+                                callback(RequestResult.Error(RequestError.UserNotFound))
                             }
                         }
                         .addOnFailureListener { e ->
-                            Log.d("AUTH", e.message.toString())
+                            callback(RequestResult.Error(RequestError.UserNotFound))
                         }
-
+                } else {
+                    val error = when (task.exception) {
+                        is FirebaseAuthInvalidUserException -> RequestError.UserNotFound
+                        is FirebaseAuthInvalidCredentialsException -> RequestError.InvalidPassword
+                        else -> RequestError.Server(task.exception?.message ?: "Unknown error")
+                    }
+                    callback(RequestResult.Error(error))
                 }
             }
-        return RequestResult.Success(Unit)
     }
 
     override fun registration(newUser: Registration): RequestResult<Unit> {
@@ -66,6 +78,10 @@ class AuthRepositoryImpl(
                     Log.w("AUTH", "createUserWithEmail:failure", task.exception)
                 }
             }
-        return RequestResult.Error(RequestError.UserNotFount)
+        return RequestResult.Error(RequestError.UserNotFound)
+    }
+
+    companion object {
+        private const val UID_STRING = "uid_current_user"
     }
 }
