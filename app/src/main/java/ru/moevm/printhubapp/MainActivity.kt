@@ -11,7 +11,9 @@ import androidx.navigation.compose.rememberNavController
 import ru.moevm.printhubapp.navigation.AppNavGraph
 import ru.moevm.printhubapp.ui.theme.AppTheme
 import ru.moevm.printhubapp.ui.theme.PrintHubAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

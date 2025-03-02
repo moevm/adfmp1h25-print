@@ -1,24 +1,31 @@
 package ru.moevm.printhubapp.data.repository
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import ru.moevm.printhubapp.data.model.User
+import ru.moevm.printhubapp.data.model.UserDto
 import ru.moevm.printhubapp.domain.entity.Auth
 import ru.moevm.printhubapp.domain.entity.Registration
 import ru.moevm.printhubapp.domain.entity.Role
 import ru.moevm.printhubapp.domain.entity.result.RequestError
 import ru.moevm.printhubapp.domain.entity.result.RequestResult
 import ru.moevm.printhubapp.domain.repository.AuthRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
-class AuthRepositoryImpl : AuthRepository {
+class AuthRepositoryImpl(
+    private val auth: FirebaseAuth,
+    private val db: FirebaseFirestore
+) : AuthRepository {
 
+    private val users = db.collection("users")
     private val _users = MutableLiveData(
         listOf(
-            User(
+            UserDto(
                 mail = "test_client@mail.ru",
                 password = "1",
                 role = Role.CLIENT
             ),
-            User(
+            UserDto(
                 mail = "test_printhub@mail.ru",
                 password = "1",
                 role = Role.PRINTHUB,
@@ -42,23 +49,30 @@ class AuthRepositoryImpl : AuthRepository {
     }
 
     override fun registration(newUser: Registration): RequestResult<Unit> {
-        val userList = _users.value?.toMutableList() ?: mutableListOf()
 
-        if (userList.any { it.mail == newUser.mail }) {
-            return RequestResult.Error(RequestError.UserAlreadyExists)
-        }
-
-        val createdUser = User(
-            mail = newUser.mail,
-            password = newUser.password,
-            role = newUser.role,
-            nameCompany = newUser.nameCompany,
-            address = newUser.address
+        val user = mapOf(
+            "mail" to newUser.mail,
+            "password" to newUser.password,
+            "role" to newUser.role,
+            "address" to newUser.address,
+            "nameCompany" to newUser.nameCompany
         )
 
-        userList.add(createdUser)
-        _users.value = userList
-
-        return RequestResult.Success(Unit)
+        auth.createUserWithEmailAndPassword(newUser.mail, newUser.password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("AUTH", "createUserWithEmail:success::${task.result.user?.uid}")
+                    users.document(task.result.user?.uid.toString()).set(user)
+                    val currentUser = auth.currentUser
+                    if (currentUser != null) {
+                        Log.d("AUTH", "auth")
+                    } else {
+                        Log.d("AUTH", "not auth")
+                    }
+                } else {
+                    Log.w("AUTH", "createUserWithEmail:failure", task.exception)
+                }
+            }
+        return RequestResult.Error(RequestError.UserNotFount)
     }
 }

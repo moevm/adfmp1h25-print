@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.auth
+package ru.moevm.printhubapp.presentation.auth.components
 
 import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.domain.entity.Role

@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.auth
+package ru.moevm.printhubapp.presentation.auth.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
