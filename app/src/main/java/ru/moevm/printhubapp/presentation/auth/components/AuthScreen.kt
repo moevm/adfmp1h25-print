@@ -51,7 +51,8 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 fun AuthScreen(
     onLoginTo: () -> Unit,
     onRegistration: () -> Unit,
-    onAbout: () -> Unit
+    onAbout: () -> Unit,
+    onLoginToPrintHub: () -> Unit
 ) {
     val viewModel: AuthViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
@@ -65,8 +66,10 @@ fun AuthScreen(
             showToast(context, state)
         }
 
-        if (state == AuthState.Success) {
-            onLoginTo()
+        when (state) {
+            AuthState.SuccessClient -> onLoginTo()
+            AuthState.SuccessPrintHub -> onLoginToPrintHub()
+            else -> {}
         }
     }
 
@@ -282,5 +285,5 @@ private fun showToast(context: Context, state: AuthState) {
 @Preview(showBackground = true)
 @Composable
 private fun AuthScreenPreview() {
-    AuthScreen({}, {}, {})
+    AuthScreen({}, {}, {}, {})
 }

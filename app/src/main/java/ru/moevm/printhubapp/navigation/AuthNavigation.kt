@@ -20,6 +20,13 @@ fun NavGraphBuilder.authNavigation(navHostController: NavHostController) {
                     }
                 }
             },
+            onLoginToPrintHub = {
+                navHostController.navigate(Screen.MainPrinthubScreen.route) {
+                    popUpTo(Screen.AuthScreen.route) {
+                        inclusive = true
+                    }
+                }
+            },
             onRegistration = {
                 navHostController.navigate(Screen.RegistrationScreen.route)
             },

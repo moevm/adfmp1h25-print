@@ -1,5 +1,6 @@
 package ru.moevm.printhubapp.presentation.auth.viewmodels
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ru.moevm.printhubapp.domain.entity.Auth
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authorizationUseCase: AuthorizationUseCase
+    private val authorizationUseCase: AuthorizationUseCase,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<AuthState>(AuthState.Init)
@@ -43,7 +45,14 @@ class AuthViewModel @Inject constructor(
                 ValidateError.SUCCESS -> {
                     authorizationUseCase(user) { result ->
                         when (result) {
-                            is RequestResult.Success -> _state.value = AuthState.Success
+                            is RequestResult.Success -> {
+                                val userRole = sharedPreferences.getString("user_role", "") ?: ""
+                                when (userRole.lowercase()) {
+                                    "client" -> _state.value = AuthState.SuccessClient
+                                    "printhub" -> _state.value = AuthState.SuccessPrintHub
+                                    else -> _state.value = AuthState.ServerError
+                                }
+                            }
                             is RequestResult.Error -> {
                                 when (result.error) {
                                     is RequestError.UserNotFound -> _state.value = AuthState.UserNotFound

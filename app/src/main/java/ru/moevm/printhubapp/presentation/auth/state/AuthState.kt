@@ -9,5 +9,6 @@ sealed class AuthState {
     object ShortPassword : AuthState()
     object ServerError : AuthState()
     object NetworkError : AuthState()
-    object Success : AuthState()
+    object SuccessClient : AuthState()
+    object SuccessPrintHub : AuthState()
 }

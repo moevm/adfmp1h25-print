@@ -33,13 +33,14 @@ class AuthRepositoryImpl(
                 if (task.isSuccessful) {
                     val currentUserId = auth.currentUser?.uid ?: ""
 
-                    sharedPreferences.edit {
-                        putString(UID_STRING, currentUserId)
-                    }
-
                     users.document(currentUserId).get()
                         .addOnSuccessListener { document ->
                             if (document.exists()) {
+                                val userRole = document.getString("role") ?: ""
+                                sharedPreferences.edit {
+                                    putString(UID_STRING, currentUserId)
+                                    putString(USER_ROLE, userRole)
+                                }
                                 callback(RequestResult.Success(Unit))
                             } else {
                                 callback(RequestResult.Error(RequestError.UserNotFound))
@@ -113,5 +114,6 @@ class AuthRepositoryImpl(
 
     companion object {
         private const val UID_STRING = "uid_current_user"
+        private const val USER_ROLE = "user_role"
     }
 }
