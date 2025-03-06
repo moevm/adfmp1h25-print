@@ -1,6 +1,7 @@
 package ru.moevm.printhubapp.navigation
 
 sealed class Screen(val route: String) {
+    object SplashScreen : Screen(ROUTER_SPLASH)
     object AuthScreen : Screen(ROUTER_AUTH)
     object RegistrationScreen : Screen(ROUTER_REGISTRATION)
 
@@ -19,6 +20,7 @@ sealed class Screen(val route: String) {
     object OrderDetailsPrinthubScreen : Screen(ROUTER_ORDER_DETAILS_PRINTHUB_SCREEN)
 
     companion object {
+        private const val ROUTER_SPLASH = "splash_screen"
         private const val ROUTER_AUTH = "auth_screen"
         private const val ROUTER_REGISTRATION = "registration_screen"
 

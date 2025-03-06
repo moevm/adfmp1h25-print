@@ -29,15 +29,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val viewModel: MainViewModel = hiltViewModel()
-                    val role by viewModel.userRole.collectAsState()
-                    val startDestination = when (role) {
-                        Role.CLIENT -> Screen.MainClientScreen.route
-                        Role.PRINTHUB -> Screen.MainPrinthubScreen.route
-                        Role.INIT -> Screen.AuthScreen.route
-                    }
                     val navHostController = rememberNavController()
-                    AppNavGraph(navHostController, startDestination)
+                    AppNavGraph(navHostController)
                 }
             }
         }

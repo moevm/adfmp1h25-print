@@ -11,6 +11,8 @@ import ru.moevm.printhubapp.domain.entity.User
 import ru.moevm.printhubapp.domain.entity.result.RequestError
 import ru.moevm.printhubapp.domain.entity.result.RequestResult
 import ru.moevm.printhubapp.domain.repository.AuthRepository
+import ru.moevm.printhubapp.utils.Constants.UID_STRING
+import ru.moevm.printhubapp.utils.Constants.USER_ROLE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -68,14 +70,14 @@ class AuthRepositoryImpl(
 
                     sharedPreferences.edit {
                         putString(UID_STRING, currentUserId)
-                        putString(USER_ROLE, newUser.role.name.lowercase())
+                        putString(USER_ROLE, newUser.role.toString().lowercase())
                     }
 
                     val user = mapOf(
                         "id" to currentUserId,
                         "password" to newUser.password,
                         "mail" to newUser.mail,
-                        "role" to newUser.role.name.lowercase(),
+                        "role" to newUser.role.toString().lowercase(),
                         "address" to newUser.address,
                         "nameCompany" to newUser.nameCompany
                     )
@@ -111,10 +113,5 @@ class AuthRepositoryImpl(
                 data.toObject<UserDto>()?.toEntity() ?: throw RuntimeException("user not found")
             )
         }
-    }
-
-    companion object {
-        private const val UID_STRING = "uid_current_user"
-        private const val USER_ROLE = "user_role"
     }
 }
