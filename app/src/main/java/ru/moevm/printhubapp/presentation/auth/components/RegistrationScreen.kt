@@ -56,7 +56,7 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 @Composable
 fun RegistrationScreen(
     viewModel: RegistrationViewModel,
-    onRegistration: () -> Unit,
+    onRegistration: (Role) -> Unit,
     onAbout: () -> Unit
 ) {
     val state = viewModel.state.collectAsState(RegistrationState.Init).value
@@ -76,8 +76,10 @@ fun RegistrationScreen(
             showToast(context, state)
         }
 
-        if (state == RegistrationState.Success) {
-            onRegistration()
+        when (state) {
+            RegistrationState.SuccessClient -> onRegistration(Role.CLIENT)
+            RegistrationState.SuccessPrintHub -> onRegistration(Role.PRINTHUB)
+            else -> {}
         }
     }
 

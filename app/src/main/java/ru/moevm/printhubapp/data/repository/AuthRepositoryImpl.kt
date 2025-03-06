@@ -68,13 +68,14 @@ class AuthRepositoryImpl(
 
                     sharedPreferences.edit {
                         putString(UID_STRING, currentUserId)
+                        putString(USER_ROLE, newUser.role.name.lowercase())
                     }
 
                     val user = mapOf(
                         "id" to currentUserId,
                         "password" to newUser.password,
                         "mail" to newUser.mail,
-                        "role" to newUser.role,
+                        "role" to newUser.role.name.lowercase(),
                         "address" to newUser.address,
                         "nameCompany" to newUser.nameCompany
                     )

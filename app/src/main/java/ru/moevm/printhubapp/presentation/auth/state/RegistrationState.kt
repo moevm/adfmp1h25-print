@@ -8,5 +8,6 @@ sealed class RegistrationState {
     object ServerError : RegistrationState()
     object NetworkError : RegistrationState()
     object UserAlreadyExists : RegistrationState()
-    object Success : RegistrationState()
+    object SuccessClient : RegistrationState()
+    object SuccessPrintHub : RegistrationState()
 }

@@ -1,8 +1,10 @@
 package ru.moevm.printhubapp.presentation.auth.viewmodels
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ru.moevm.printhubapp.domain.entity.Registration
+import ru.moevm.printhubapp.domain.entity.Role
 import ru.moevm.printhubapp.domain.entity.result.RequestError
 import ru.moevm.printhubapp.domain.entity.result.RequestResult
 import ru.moevm.printhubapp.domain.usecases.RegistrationUseCase
@@ -19,13 +21,14 @@ import javax.inject.Inject
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
     private val registrationUseCase: RegistrationUseCase,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
     private val _state = MutableStateFlow<RegistrationState>(RegistrationState.Init)
     val state: StateFlow<RegistrationState> get() = _state.asStateFlow()
 
     fun registration(newUser: Registration) {
         viewModelScope.launch {
-            _state.value =  RegistrationState.Loading
+            _state.value = RegistrationState.Loading
             val validationError = validateCredentials(newUser.mail, newUser.password)
 
             when(validationError) {
@@ -41,7 +44,11 @@ class RegistrationViewModel @Inject constructor(
                     registrationUseCase(newUser) { result ->
                         when (result) {
                             is RequestResult.Success -> {
-                                _state.value = RegistrationState.Success
+                                when (newUser.role) {
+                                    Role.CLIENT -> _state.value = RegistrationState.SuccessClient
+                                    Role.PRINTHUB -> _state.value = RegistrationState.SuccessPrintHub
+                                    else -> _state.value = RegistrationState.ServerError
+                                }
                             }
                             is RequestResult.Error -> {
                                 when (result.error) {
