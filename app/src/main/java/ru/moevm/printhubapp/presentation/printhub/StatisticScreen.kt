@@ -102,6 +102,11 @@ fun StatisticScreen(
             InfoRow(
                 titleId = R.string.price_printer_title,
             )
+            Text(
+                modifier = Modifier.padding(top = 16.dp),
+                text = "*До окупаемости принтера - 4000",
+                color = AppTheme.colors.black9
+            )
         }
     }
 }

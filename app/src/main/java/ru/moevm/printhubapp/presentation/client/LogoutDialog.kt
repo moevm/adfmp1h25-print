@@ -43,7 +43,7 @@ fun LogoutDialog(
                     text = stringResource(R.string.logout_dialog_title),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium,
-                    color = AppTheme.colors.black9
+                    color = AppTheme.colors.textTitleDialog
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
