@@ -15,6 +15,7 @@ sealed class Screen(val route: String) {
 
     object MainPrinthubScreen : Screen(ROUTER_MAIN_PRINTHUB_SCREEN)
     object PrinthubProfileScreen : Screen(ROUTER_PRINTHUB_PROFILE_SCREEN)
+    object StatisticScreen : Screen(ROUTER_STATISTIC_SCREEN)
 
 
 
@@ -33,5 +34,6 @@ sealed class Screen(val route: String) {
 
         private const val ROUTER_MAIN_PRINTHUB_SCREEN = "main_printhub_screen"
         private const val ROUTER_PRINTHUB_PROFILE_SCREEN = "printhub_profile_screen"
+        private const val ROUTER_STATISTIC_SCREEN = "statistic_screen"
     }
 }

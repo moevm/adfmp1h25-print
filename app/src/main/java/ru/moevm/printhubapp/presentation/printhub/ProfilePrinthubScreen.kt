@@ -40,7 +40,8 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 @Composable
 fun ProfilePrinthubScreen(
     navHostController: NavHostController,
-    onAbout: () -> Unit
+    onAbout: () -> Unit,
+    onStatistic: () -> Unit,
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
     Scaffold(
@@ -137,7 +138,9 @@ fun ProfilePrinthubScreen(
             InfoRow(
                 titleId = R.string.statistics_title,
                 isNavigate = true,
-                onNavigate = {}
+                onNavigate = {
+                    onStatistic()
+                }
             )
             InfoRow(
                 titleId = R.string.logout,
@@ -204,5 +207,5 @@ private fun InfoRow(
 @Composable
 private fun ProfilePrinthubScreenPreview() {
     val navHostController = rememberNavController()
-    ProfilePrinthubScreen(navHostController, {})
+    ProfilePrinthubScreen(navHostController, {}, {})
 }
