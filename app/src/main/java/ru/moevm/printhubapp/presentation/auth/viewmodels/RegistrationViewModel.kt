@@ -1,6 +1,5 @@
 package ru.moevm.printhubapp.presentation.auth.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ru.moevm.printhubapp.domain.entity.Registration
@@ -43,7 +42,6 @@ class RegistrationViewModel @Inject constructor(
                         when (result) {
                             is RequestResult.Success -> {
                                 _state.value = RegistrationState.Success
-                                Log.d("TAG", state.value.toString())
                             }
                             is RequestResult.Error -> {
                                 when (result.error) {
