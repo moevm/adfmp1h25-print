@@ -35,11 +35,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.navigation.Screen
 import ru.moevm.printhubapp.presentation.client.NavigationItem
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun MainPrinthubScreen() {
+fun MainPrinthubScreen(
+    onAbout: () -> Unit,
+    onNavigateTo: (screen: Screen) -> Unit,
+    onOrderDetails: () -> Unit,
+) {
     var search by remember { mutableStateOf("") }
     Scaffold(
         topBar = {
@@ -63,7 +68,7 @@ fun MainPrinthubScreen() {
                         color = AppTheme.colors.black9
                     )
                     Icon(
-                        modifier = Modifier.clickable { },
+                        modifier = Modifier.clickable { onAbout() },
                         painter = painterResource(R.drawable.info_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -158,7 +163,9 @@ fun MainPrinthubScreen() {
             ) {
                 for (i in 0..5) {
                     item {
-                        OrderPrinthubCard()
+                        OrderPrinthubCard(
+                            openDetails = onOrderDetails
+                        )
                     }
                 }
             }
@@ -169,5 +176,5 @@ fun MainPrinthubScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun MainPrinthubScreenPreview() {
-    MainPrinthubScreen()
+    MainPrinthubScreen({}, {}, {})
 }

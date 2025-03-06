@@ -6,9 +6,10 @@ import androidx.navigation.compose.NavHost
 
 @Composable
 fun AppNavGraph(navHostController: NavHostController) {
-    NavHost(navController = navHostController, startDestination = Screen.AuthScreen.route) {
+    NavHost(navController = navHostController, startDestination = Screen.MainPrinthubScreen.route) {
         authNavigation(navHostController)
         aboutNavigation(navHostController)
         clientNavigation(navHostController)
+        printhubNavigation(navHostController)
     }
 }
