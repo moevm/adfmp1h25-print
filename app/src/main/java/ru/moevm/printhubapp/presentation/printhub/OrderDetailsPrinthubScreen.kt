@@ -42,8 +42,17 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 @Composable
 fun OrderDetailsPrinthubScreen(
     idOrder: Int,
+    onBack: () -> Unit,
+    onAbout: () -> Unit
 ) {
-    val isReject = false
+    var status by remember { mutableStateOf(OrderPrinthubStatus.NEW) }
+    val colorStatus = when(status) {
+        OrderPrinthubStatus.NEW -> AppTheme.colors.gray7
+        OrderPrinthubStatus.INWORK -> AppTheme.colors.yellow
+        OrderPrinthubStatus.AWAIT -> AppTheme.colors.green8
+        OrderPrinthubStatus.READE -> AppTheme.colors.green8
+        OrderPrinthubStatus.REJECT -> AppTheme.colors.red
+    }
     var isVisibleRejectDialog by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
@@ -64,7 +73,7 @@ fun OrderDetailsPrinthubScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
-                            modifier = Modifier.clickable { },
+                            modifier = Modifier.clickable { onBack() },
                             painter = painterResource(R.drawable.back_arrow_ic),
                             contentDescription = null,
                             tint = AppTheme.colors.black9
@@ -81,7 +90,7 @@ fun OrderDetailsPrinthubScreen(
                         )
                     }
                     Icon(
-                        modifier = Modifier.clickable { },
+                        modifier = Modifier.clickable { onAbout() },
                         painter = painterResource(R.drawable.info_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -114,9 +123,9 @@ fun OrderDetailsPrinthubScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         modifier = Modifier
-                            .background(AppTheme.colors.gray7, RoundedCornerShape(10.dp))
+                            .background(colorStatus, RoundedCornerShape(10.dp))
                             .padding(vertical = 4.dp, horizontal = 8.dp),
-                        text = stringResource(R.string.status_new),
+                        text = stringResource(status.value),
                         fontSize = 16.sp,
                         color = Color.White
                     )
@@ -151,7 +160,7 @@ fun OrderDetailsPrinthubScreen(
                     titleId = R.string.placeholder_comment,
                     comment = "Хочу быстрее"
                 )
-                if (isReject) {
+                if (status == OrderPrinthubStatus.REJECT) {
                     Spacer(Modifier.height(16.dp))
                     Comment(
                         titleId = R.string.reason_reject,
@@ -159,11 +168,48 @@ fun OrderDetailsPrinthubScreen(
                     )
                 }
             }
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            if(status == OrderPrinthubStatus.NEW) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = { status = OrderPrinthubStatus.INWORK },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AppTheme.colors.orange10,
+                            contentColor = AppTheme.colors.black9,
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            text = stringResource(R.string.take_order_button_text),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    Spacer(Modifier.height(16.dp))
+                    Button(
+                        onClick = { isVisibleRejectDialog = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AppTheme.colors.gray2,
+                            contentColor = AppTheme.colors.black9
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            text = stringResource(R.string.reject_order_button),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
+            if(status == OrderPrinthubStatus.INWORK) {
                 Button(
-                    onClick = {  },
+                    onClick = { status = OrderPrinthubStatus.AWAIT },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = AppTheme.colors.orange10,
@@ -173,24 +219,25 @@ fun OrderDetailsPrinthubScreen(
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
-                        text = stringResource(R.string.take_order_button_text),
+                        text = stringResource(R.string.finish_button),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium
                     )
                 }
-                Spacer(Modifier.height(16.dp))
+            }
+            if(status == OrderPrinthubStatus.AWAIT) {
                 Button(
-                    onClick = { isVisibleRejectDialog = true },
+                    onClick = { status = OrderPrinthubStatus.READE },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = AppTheme.colors.gray2,
-                        contentColor = AppTheme.colors.black9
+                        containerColor = AppTheme.colors.orange10,
+                        contentColor = AppTheme.colors.black9,
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
-                        text = stringResource(R.string.reject_order_button),
+                        text = stringResource(R.string.finish_order_button),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -199,7 +246,14 @@ fun OrderDetailsPrinthubScreen(
         }
     }
     if (isVisibleRejectDialog) {
-        RejectDialog { isVisibleRejectDialog = false }
+        RejectDialog(
+            onDismiss = {
+                isVisibleRejectDialog = false
+            },
+            onChangeStatus = {
+                status = OrderPrinthubStatus.REJECT
+            }
+        )
     }
 }
 
@@ -285,5 +339,5 @@ private fun Comment(
 @Preview(showBackground = true)
 @Composable
 private fun OrderDetailsPrinthubScreenPreview() {
-    OrderDetailsPrinthubScreen(idOrder = 1)
+    OrderDetailsPrinthubScreen(idOrder = 1, {}, {})
 }

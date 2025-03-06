@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import ru.moevm.printhubapp.presentation.printhub.MainPrinthubScreen
+import ru.moevm.printhubapp.presentation.printhub.OrderDetailsPrinthubScreen
 import ru.moevm.printhubapp.presentation.printhub.ProfilePrinthubScreen
 import ru.moevm.printhubapp.presentation.printhub.StatisticScreen
 
@@ -16,7 +17,9 @@ fun NavGraphBuilder.printhubNavigation(navController: NavHostController) {
             onAbout = {
                 navController.navigate(Screen.AboutScreen.route)
             },
-            onOrderDetails = {}
+            onOrderDetails = {
+                navController.navigate(Screen.OrderDetailsPrinthubScreen.route)
+            }
         )
     }
 
@@ -46,5 +49,18 @@ fun NavGraphBuilder.printhubNavigation(navController: NavHostController) {
             }
         )
     }
-}
 
+    composable(
+        route = Screen.OrderDetailsPrinthubScreen.route
+    ) {
+        OrderDetailsPrinthubScreen(
+            idOrder = 1,
+            onBack = {
+                navController.popBackStack()
+            },
+            onAbout = {
+                navController.navigate(Screen.AboutScreen.route)
+            }
+        )
+    }
+}
