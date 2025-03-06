@@ -34,12 +34,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import ru.moevm.printhubapp.R
-import ru.moevm.printhubapp.presentation.client.NavigationItem
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun MainPrinthubScreen() {
+fun MainPrinthubScreen(
+    navHostController: NavHostController,
+    onAbout: () -> Unit,
+    onOrderDetails: () -> Unit,
+) {
     var search by remember { mutableStateOf("") }
     Scaffold(
         topBar = {
@@ -63,7 +70,7 @@ fun MainPrinthubScreen() {
                         color = AppTheme.colors.black9
                     )
                     Icon(
-                        modifier = Modifier.clickable { },
+                        modifier = Modifier.clickable { onAbout() },
                         painter = painterResource(R.drawable.info_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -82,16 +89,23 @@ fun MainPrinthubScreen() {
                 NavigationBar(
                     containerColor = AppTheme.colors.orange10,
                 ) {
+                    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
                     val items = listOf(
-                        NavigationItem.Home,
-                        NavigationItem.Profile
+                        PrinthubNavigationItem.Home,
+                        PrinthubNavigationItem.Profile
                     )
 
                     items.forEach { item ->
-                        val selected = true
+                        val selected = navBackStackEntry?.destination?.hierarchy?.any {
+                            it.route == item.screen.route
+                        } ?: false
                         NavigationBarItem(
                             selected = selected,
-                            onClick = {},
+                            onClick = {
+                                if (!selected) {
+                                    navHostController.navigate(item.screen.route)
+                                }
+                            },
                             label = {
                                 Text(
                                     text = stringResource(item.titleResId),
@@ -158,7 +172,9 @@ fun MainPrinthubScreen() {
             ) {
                 for (i in 0..5) {
                     item {
-                        OrderPrinthubCard()
+                        OrderPrinthubCard(
+                            openDetails = onOrderDetails
+                        )
                     }
                 }
             }
@@ -169,5 +185,6 @@ fun MainPrinthubScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun MainPrinthubScreenPreview() {
-    MainPrinthubScreen()
+    val navHostController = rememberNavController()
+    MainPrinthubScreen(navHostController, {}, {})
 }

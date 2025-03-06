@@ -93,6 +93,10 @@
 
     <!--    Order printhub card  -->
     <string name="status_new">Новый</string>
+    <string name="status_in_work">В работе</string>
+    <string name="status_reade">Выполнен</string>
+    <string name="status_reject">Отказ</string>
+    <string name="status_await">Ожидает получения</string>
     <!--    END     -->
 
     <!--    Main Printhub Screen    -->

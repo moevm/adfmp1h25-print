@@ -33,7 +33,8 @@ import ru.moevm.printhubapp.utils.LIMIT_CHAR_REJECT
 
 @Composable
 fun RejectDialog(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onChangeStatus: () -> Unit
 ) {
     var comment by remember { mutableStateOf("") }
     Dialog(
@@ -109,7 +110,10 @@ fun RejectDialog(
                 Spacer(modifier = Modifier.height(32.dp))
                 val isEnable = comment.isNotEmpty()
                 Button(
-                    onClick = onDismiss,
+                    onClick = {
+                        onChangeStatus()
+                        onDismiss()
+                    },
                     enabled = isEnable,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
@@ -152,5 +156,5 @@ fun RejectDialog(
 @Preview(showBackground = true)
 @Composable
 private fun RejectDialogPreview() {
-    RejectDialog({})
+    RejectDialog({}, {})
 }

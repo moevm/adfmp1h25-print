@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import ru.moevm.printhubapp.presentation.auth.components.AuthScreen
 import ru.moevm.printhubapp.presentation.auth.components.RegistrationScreen
-import com.example.printhubapp.presentation.auth.viewmodels.RegistrationViewModel
+import ru.moevm.printhubapp.presentation.auth.viewmodels.RegistrationViewModel
 
 fun NavGraphBuilder.authNavigation(navHostController: NavHostController) {
     composable(

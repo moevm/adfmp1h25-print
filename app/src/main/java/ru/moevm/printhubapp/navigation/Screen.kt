@@ -13,7 +13,10 @@ sealed class Screen(val route: String) {
     object OrderDetailsScreen : Screen(ROUTER_ORDER_DETAILS_SCREEN)
     object ClientProfileScreen : Screen(ROUTER_CLIENT_PROFILE_SCREEN)
 
-
+    object MainPrinthubScreen : Screen(ROUTER_MAIN_PRINTHUB_SCREEN)
+    object PrinthubProfileScreen : Screen(ROUTER_PRINTHUB_PROFILE_SCREEN)
+    object StatisticScreen : Screen(ROUTER_STATISTIC_SCREEN)
+    object OrderDetailsPrinthubScreen : Screen(ROUTER_ORDER_DETAILS_PRINTHUB_SCREEN)
 
     companion object {
         private const val ROUTER_AUTH = "auth_screen"
@@ -27,5 +30,10 @@ sealed class Screen(val route: String) {
         private const val ROUTER_SUCCESS_SCREEN = "success_screen"
         private const val ROUTER_ORDER_DETAILS_SCREEN = "order_details_screen"
         private const val ROUTER_CLIENT_PROFILE_SCREEN = "client_profile_screen"
+
+        private const val ROUTER_MAIN_PRINTHUB_SCREEN = "main_printhub_screen"
+        private const val ROUTER_PRINTHUB_PROFILE_SCREEN = "printhub_profile_screen"
+        private const val ROUTER_STATISTIC_SCREEN = "statistic_screen"
+        private const val ROUTER_ORDER_DETAILS_PRINTHUB_SCREEN = "order_details_printhub_screen"
     }
 }

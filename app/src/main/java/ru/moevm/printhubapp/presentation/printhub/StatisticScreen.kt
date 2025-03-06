@@ -29,7 +29,10 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun StatisticScreen() {
+fun StatisticScreen(
+    onBack: () -> Unit,
+    onAbout: () -> Unit
+) {
     Scaffold(
         topBar = {
             Column(
@@ -49,7 +52,7 @@ fun StatisticScreen() {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
-                            modifier = Modifier.clickable { },
+                            modifier = Modifier.clickable { onBack() },
                             painter = painterResource(R.drawable.back_arrow_ic),
                             contentDescription = null,
                             tint = AppTheme.colors.black9
@@ -65,7 +68,7 @@ fun StatisticScreen() {
                         )
                     }
                     Icon(
-                        modifier = Modifier.clickable { },
+                        modifier = Modifier.clickable { onAbout() },
                         painter = painterResource(R.drawable.info_ic),
                         contentDescription = null,
                         tint = AppTheme.colors.black9
@@ -184,5 +187,5 @@ private fun InfoRow(
 @Preview(showBackground = true)
 @Composable
 private fun StatisticScreenPreview() {
-    StatisticScreen()
+    StatisticScreen({}, {})
 }
