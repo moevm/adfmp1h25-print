@@ -1,10 +1,12 @@
 package ru.moevm.printhubapp.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import ru.moevm.printhubapp.presentation.auth.AuthScreen
-import ru.moevm.printhubapp.presentation.auth.RegistrationScreen
+import ru.moevm.printhubapp.presentation.auth.components.AuthScreen
+import ru.moevm.printhubapp.presentation.auth.components.RegistrationScreen
+import com.example.printhubapp.presentation.auth.viewmodels.RegistrationViewModel
 
 fun NavGraphBuilder.authNavigation(navHostController: NavHostController) {
     composable(
@@ -26,10 +28,13 @@ fun NavGraphBuilder.authNavigation(navHostController: NavHostController) {
             }
         )
     }
+
     composable(
         route = Screen.RegistrationScreen.route
     ) {
+        val viewModel: RegistrationViewModel = hiltViewModel()
         RegistrationScreen(
+            viewModel = viewModel,
             onRegistration = {
                 navHostController.navigate(Screen.MainClientScreen.route) {
                     popUpTo(Screen.RegistrationScreen.route) {
