@@ -91,6 +91,39 @@
     <string name="reject_button">Отмена</string>
     <!--    END     -->
 
+    <!--    Order printhub card  -->
+    <string name="status_new">Новый</string>
+    <!--    END     -->
+
+    <!--    Main Printhub Screen    -->
+    <string name="placeholder_choose_order_number">Введите номер заказа</string>
+    <!--    END     -->
+
+    <!--    Profile Printhub Screen   -->
+    <string name="name_printhub_title">Печатный центр: %s</string>
+    <string name="address_title">Адрес: %s</string>
+    <string name="statistics_title">Статистика</string>
+    <!--    END     -->
+
+    <!--   Order Details Printhub Screen  -->
+    <string name="take_order_button_text">Взять в работу</string>
+    <string name="reject_order_button">Отказаться</string>
+    <string name="finish_button">Завершить</string>
+    <string name="finish_order_button">Завершить заказ</string>
+    <!--    END     -->
+
+    <!--    Reject Dialog   -->
+    <string name="reject_dialog_title">Причина отказа</string>
+    <string name="required_param">*Обзательный комментарий</string>
+    <!--    END     -->
+
+    <!--    Statistic Screen   -->
+    <string name="statistic_screen_title">Статистика</string>
+    <string name="list_title">Расход бумаги: %s мл</string>
+    <string name="toner_title">Расход тонера: %s мл</string>
+    <string name="profit_title">Доход: %s ₽</string>
+    <string name="price_printer_title">Цена принтера: 5000 ₽</string>
+    <!--    END     -->
 
 
 
