@@ -114,4 +114,12 @@ class AuthRepositoryImpl(
             )
         }
     }
+
+    override fun logout() {
+        auth.signOut()
+        sharedPreferences.edit {
+            remove(UID_STRING)
+            remove(USER_ROLE)
+        }
+    }
 }

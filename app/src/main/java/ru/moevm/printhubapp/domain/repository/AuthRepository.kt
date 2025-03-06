@@ -10,4 +10,5 @@ interface AuthRepository {
     fun registration(newUser: Registration, callback: (RequestResult<Unit>) -> Unit)
     fun checkLogin(): Boolean
     fun getUser(callback: (User) -> Unit)
+    fun logout()
 }

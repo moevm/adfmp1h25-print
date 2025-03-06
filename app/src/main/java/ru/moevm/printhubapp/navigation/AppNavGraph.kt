@@ -14,6 +14,15 @@ fun AppNavGraph(navHostController: NavHostController) {
         authNavigation(navHostController)
         aboutNavigation(navHostController)
         clientNavigation(navHostController)
-        printhubNavigation(navHostController)
+        printhubNavigation(
+            navController = navHostController,
+            onLogout = {
+                navHostController.navigate(Screen.AuthScreen.route) {
+                    popUpTo(Screen.PrinthubProfileScreen.route) {
+                        inclusive = true
+                    }
+                }
+            }
+        )
     }
 }

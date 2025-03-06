@@ -3,6 +3,7 @@ package ru.moevm.printhubapp.presentation.splash
 import androidx.lifecycle.ViewModel
 import ru.moevm.printhubapp.domain.entity.AuthState
 import ru.moevm.printhubapp.domain.usecases.CheckAuthAndRoleUseCase
+import ru.moevm.printhubapp.domain.usecases.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val checkAuthAndRoleUseCase: CheckAuthAndRoleUseCase
+    private val checkAuthAndRoleUseCase: CheckAuthAndRoleUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow<SplashState>(SplashState.Loading)
     val state: StateFlow<SplashState> get() = _state.asStateFlow()
@@ -26,6 +28,11 @@ class SplashViewModel @Inject constructor(
             AuthState.AuthenticatedClient -> _state.value = SplashState.NavigateToClientMain
             AuthState.AuthenticatedPrintHub -> _state.value = SplashState.NavigateToPrintHubMain
         }
+    }
+
+    fun logout() {
+        logoutUseCase()
+        _state.value = SplashState.NavigateToAuth
     }
 }
 
