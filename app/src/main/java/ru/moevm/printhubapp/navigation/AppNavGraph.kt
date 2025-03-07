@@ -6,10 +6,23 @@ import androidx.navigation.compose.NavHost
 
 @Composable
 fun AppNavGraph(navHostController: NavHostController) {
-    NavHost(navController = navHostController, startDestination = Screen.MainPrinthubScreen.route) {
+    NavHost(
+        navController = navHostController,
+        startDestination = Screen.SplashScreen.route
+    ) {
+        splashNavigation(navHostController)
         authNavigation(navHostController)
         aboutNavigation(navHostController)
         clientNavigation(navHostController)
-        printhubNavigation(navHostController)
+        printhubNavigation(
+            navController = navHostController,
+            onLogout = {
+                navHostController.navigate(Screen.AuthScreen.route) {
+                    popUpTo(Screen.PrinthubProfileScreen.route) {
+                        inclusive = true
+                    }
+                }
+            }
+        )
     }
 }

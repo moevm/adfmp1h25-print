@@ -29,12 +29,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.presentation.client.LogoutDialog
+import ru.moevm.printhubapp.presentation.splash.SplashViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
@@ -42,7 +44,9 @@ fun ProfilePrinthubScreen(
     navHostController: NavHostController,
     onAbout: () -> Unit,
     onStatistic: () -> Unit,
+    onLogout: () -> Unit
 ) {
+    val splashViewModel: SplashViewModel = hiltViewModel()
     var showLogoutDialog by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
@@ -90,7 +94,6 @@ fun ProfilePrinthubScreen(
                         PrinthubNavigationItem.Home,
                         PrinthubNavigationItem.Profile
                     )
-
                     items.forEach { item ->
                         val selected = navBackStackEntry?.destination?.hierarchy?.any {
                             it.route == item.screen.route
@@ -156,6 +159,8 @@ fun ProfilePrinthubScreen(
         LogoutDialog(
             onLogout = {
                 showLogoutDialog = false
+                splashViewModel.logout()
+                onLogout()
             },
             onDismiss = {
                 showLogoutDialog = false
@@ -207,5 +212,5 @@ private fun InfoRow(
 @Composable
 private fun ProfilePrinthubScreenPreview() {
     val navHostController = rememberNavController()
-    ProfilePrinthubScreen(navHostController, {}, {})
+    ProfilePrinthubScreen(navHostController, {}, {}, {})
 }

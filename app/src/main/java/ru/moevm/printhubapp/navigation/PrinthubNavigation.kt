@@ -8,7 +8,10 @@ import ru.moevm.printhubapp.presentation.printhub.OrderDetailsPrinthubScreen
 import ru.moevm.printhubapp.presentation.printhub.ProfilePrinthubScreen
 import ru.moevm.printhubapp.presentation.printhub.StatisticScreen
 
-fun NavGraphBuilder.printhubNavigation(navController: NavHostController) {
+fun NavGraphBuilder.printhubNavigation(
+    navController: NavHostController,
+    onLogout: () -> Unit
+) {
     composable(
         route = Screen.MainPrinthubScreen.route
     ) {
@@ -33,7 +36,8 @@ fun NavGraphBuilder.printhubNavigation(navController: NavHostController) {
             },
             onStatistic = {
                 navController.navigate(Screen.StatisticScreen.route)
-            }
+            },
+            onLogout = onLogout
         )
     }
 

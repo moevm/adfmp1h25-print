@@ -29,11 +29,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.presentation.splash.SplashViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
@@ -42,6 +44,7 @@ fun ClientProfileScreen(
     onAbout: () -> Unit,
     onLogout: () -> Unit
 ) {
+    val splashViewModel: SplashViewModel = hiltViewModel()
     var showLogoutDialog by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
@@ -89,6 +92,7 @@ fun ClientProfileScreen(
                         NavigationItem.Home,
                         NavigationItem.Profile
                     )
+
                     items.forEach { item ->
                         val selected = navBackStackEntry?.destination?.hierarchy?.any {
                             it.route == item.screen.route
@@ -147,6 +151,7 @@ fun ClientProfileScreen(
         LogoutDialog(
             onLogout = {
                 showLogoutDialog = false
+                splashViewModel.logout()
                 onLogout()
             },
             onDismiss = {
@@ -166,7 +171,7 @@ private fun InfoRow(
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
-    ){
+    ) {
         Row(
             modifier = Modifier
                 .padding(vertical = 16.dp)
