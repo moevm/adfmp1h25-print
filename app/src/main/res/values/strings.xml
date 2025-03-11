@@ -10,7 +10,7 @@
     <!--    END     -->
 
     <!--    Registration    -->
-    <string name="placeholder_nameCompany">Название компании</string>
+    <string name="placeholder_nameCompany">Название компании пользователя</string>
     <string name="placeholder_address">Адрес</string>
     <string name="select_role">Выберите роль</string>
     <string name="client_role">Клиент</string>
@@ -30,8 +30,8 @@
     <string name="order_number">Заказ №1</string>
     <string name="print_hub_name">Печатный центра: Хамелеон</string>
     <string name="address_print_hub">Адрес: Санкт-Петербург, улица Попова 5Б</string>
-    <string name="date_of_create">Дата создания: 15.03.2025</string>
-    <string name="date_of_last_change">Дата последнего обновления: 15.03.2025</string>
+    <string name="date_of_create">Дата создания: 15.03.2025 15:00</string>
+    <string name="date_of_last_change">Дата последнего обновления: 15.03.2025 15:00</string>
     <!--    END     -->
 
     <!--    Main Client Screen  -->
