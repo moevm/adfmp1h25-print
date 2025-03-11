@@ -42,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -167,6 +168,7 @@ fun RegistrationScreen(
                         )
                     },
                     singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
                     textStyle = TextStyle(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Normal,
@@ -394,7 +396,7 @@ private fun showToast(context: Context, state: RegistrationState) {
 
 @Preview(showBackground = true)
 @Composable
-private fun AuthScreenPreview() {
+private fun RegistrationScreenPreview() {
     val viewModel: RegistrationViewModel = hiltViewModel()
     RegistrationScreen(viewModel, {}, {})
 }
