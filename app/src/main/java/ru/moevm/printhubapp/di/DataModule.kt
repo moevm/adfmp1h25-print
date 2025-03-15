@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import ru.moevm.printhubapp.data.repository.AuthRepositoryImpl
 import ru.moevm.printhubapp.data.repository.OrdersRepositoryImpl
+import ru.moevm.printhubapp.data.repository.PrinthubsRepositoryImpl
 import ru.moevm.printhubapp.domain.repository.AuthRepository
 import ru.moevm.printhubapp.domain.repository.OrdersRepository
+import ru.moevm.printhubapp.domain.repository.PrinthubsRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -35,6 +37,14 @@ object DataModule {
         db: FirebaseFirestore
     ): OrdersRepository {
         return OrdersRepositoryImpl(db)
+    }
+
+    @Provides
+    @Singleton
+    fun providePrinthubsRepository(
+        db: FirebaseFirestore
+    ): PrinthubsRepository {
+        return PrinthubsRepositoryImpl(db)
     }
 
     @Provides

@@ -15,10 +15,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.domain.entity.Role
+import ru.moevm.printhubapp.domain.entity.User
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
 fun PrintHubCard(
+    printhub: User,
     onNavigateTo: () -> Unit
 ) {
     Card(
@@ -33,12 +36,12 @@ fun PrintHubCard(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = stringResource(R.string.print_hub_name),
+                text = "Печатный центр: ${printhub.nameCompany}",
                 fontSize = 16.sp,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.address_print_hub),
+                text = "Адрес: ${printhub.address}",
                 fontSize = 16.sp,
             )
         }
@@ -48,5 +51,16 @@ fun PrintHubCard(
 @Preview(showBackground = true)
 @Composable
 private fun PrintHubCardPreview() {
-    PrintHubCard({})
+    val printhub = User(
+        nameCompany = "PrintHub",
+        address = "ул. Пушкина, д. Колотушкина",
+        id = "",
+        mail = "",
+        password = "",
+        role = Role.PRINTHUB
+    )
+    PrintHubCard(
+        printhub = printhub,
+        onNavigateTo = {}
+    )
 }
