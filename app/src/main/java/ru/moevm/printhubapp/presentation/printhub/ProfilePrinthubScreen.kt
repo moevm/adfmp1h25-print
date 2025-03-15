@@ -3,11 +3,14 @@ package ru.moevm.printhubapp.presentation.printhub
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -16,6 +19,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +40,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.presentation.client.components.LogoutDialog
+import ru.moevm.printhubapp.presentation.client.state.ProfileState
+import ru.moevm.printhubapp.presentation.client.viewmodels.ProfileViewModel
 import ru.moevm.printhubapp.presentation.splash.SplashViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
@@ -46,6 +52,10 @@ fun ProfilePrinthubScreen(
     onStatistic: () -> Unit,
     onLogout: () -> Unit
 ) {
+
+    val viewModel: ProfileViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsState()
+
     val splashViewModel: SplashViewModel = hiltViewModel()
     var showLogoutDialog by remember { mutableStateOf(false) }
     Scaffold(
@@ -130,29 +140,47 @@ fun ProfilePrinthubScreen(
                 .background(AppTheme.colors.gray1, RoundedCornerShape(16.dp))
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-            InfoRow(
-                titleId = R.string.name_printhub_title,
-                param = "Хамелеон"
-            )
-            InfoRow(
-                titleId = R.string.address_title,
-                param = "Санкт-Петербург, улица Попова 5Б"
-            )
-            InfoRow(
-                titleId = R.string.statistics_title,
-                isNavigate = true,
-                onNavigate = {
-                    onStatistic()
+            when(state) {
+                is ProfileState.Success -> {
+                    val user = (state as ProfileState.Success).user
+                    InfoRow(
+                        titleId = R.string.name_printhub_title,
+                        param = user.nameCompany
+                    )
+                    InfoRow(
+                        titleId = R.string.address_title,
+                        param = user.address
+                    )
+                    InfoRow(
+                        titleId = R.string.statistics_title,
+                        isNavigate = true,
+                        onNavigate = {
+                            onStatistic()
+                        }
+                    )
+                    InfoRow(
+                        titleId = R.string.logout,
+                        isNavigate = true,
+                        color = AppTheme.colors.red,
+                        onNavigate = {
+                            showLogoutDialog = true
+                        }
+                    )
                 }
-            )
-            InfoRow(
-                titleId = R.string.logout,
-                isNavigate = true,
-                color = AppTheme.colors.red,
-                onNavigate = {
-                    showLogoutDialog = true
+
+                is ProfileState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = AppTheme.colors.orange10,
+                        )
+                    }
                 }
-            )
+
+                else -> {}
+            }
         }
     }
     if (showLogoutDialog) {

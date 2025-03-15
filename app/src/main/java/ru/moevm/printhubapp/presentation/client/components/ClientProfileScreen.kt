@@ -1,14 +1,16 @@
 package ru.moevm.printhubapp.presentation.client.components
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -25,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,8 +38,9 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import ru.moevm.printhubapp.MainViewModel
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.presentation.client.state.ProfileState
+import ru.moevm.printhubapp.presentation.client.viewmodels.ProfileViewModel
 import ru.moevm.printhubapp.presentation.splash.SplashViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
@@ -48,8 +50,8 @@ fun ClientProfileScreen(
     onAbout: () -> Unit,
     onLogout: () -> Unit
 ) {
-    val mainViewModel: MainViewModel = hiltViewModel()
-    val userMail by mainViewModel.userMail.collectAsState()
+    val viewModel: ProfileViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsState()
 
     val splashViewModel: SplashViewModel = hiltViewModel()
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -136,22 +138,38 @@ fun ClientProfileScreen(
                 .background(AppTheme.colors.gray1, RoundedCornerShape(16.dp))
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-            InfoRow(
-                titleId = R.string.name_title,
-                param = "Клиент"
-            )
-            InfoRow(
-                titleId = R.string.mail_title,
-                param = userMail
-            )
-            InfoRow(
-                titleId = R.string.logout,
-                isNavigate = true,
-                color = AppTheme.colors.red,
-                onLogout = {
-                    showLogoutDialog = true
+            when(state) {
+                is ProfileState.Success -> {
+                    val user = (state as ProfileState.Success).user
+                    InfoRow(
+                        titleId = R.string.name_title,
+                        param = "Клиент"
+                    )
+                    InfoRow(
+                        titleId = R.string.mail_title,
+                        param = user.mail
+                    )
+                    InfoRow(
+                        titleId = R.string.logout,
+                        isNavigate = true,
+                        color = AppTheme.colors.red,
+                        onLogout = {
+                            showLogoutDialog = true
+                        }
+                    )
                 }
-            )
+                is ProfileState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        CircularProgressIndicator(
+                            color = AppTheme.colors.orange10,
+                        )
+                    }
+                }
+                else -> {}
+            }
         }
     }
     if (showLogoutDialog) {

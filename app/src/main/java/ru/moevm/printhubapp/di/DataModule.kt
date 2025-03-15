@@ -15,6 +15,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import ru.moevm.printhubapp.data.repository.UserRepositoryImpl
+import ru.moevm.printhubapp.domain.repository.UserRepository
 import javax.inject.Singleton
 
 @Module
@@ -38,6 +40,15 @@ object DataModule {
         sharedPreferences: SharedPreferences
     ): OrdersRepository {
         return OrdersRepositoryImpl(db, sharedPreferences)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(
+        db: FirebaseFirestore,
+        sharedPreferences: SharedPreferences
+    ): UserRepository {
+        return UserRepositoryImpl(db, sharedPreferences)
     }
 
     @Provides
