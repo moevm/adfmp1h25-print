@@ -13,12 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.domain.entity.Order
 import ru.moevm.printhubapp.presentation.client.utils.formatToString
 import ru.moevm.printhubapp.ui.theme.AppTheme
+import ru.moevm.printhubapp.utils.getStatusColor
 
 @Composable
 fun OrderCard(
@@ -46,27 +49,33 @@ fun OrderCard(
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Заказ ${order.number}",
+                text = String.format(stringResource(R.string.order_number), order.number),
                 fontSize = 16.sp,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Печатный центр: ${order.nameCompany}",
+                text = String.format(stringResource(R.string.print_hub_name), order.nameCompany),
                 fontSize = 16.sp,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Адрес: ${order.address}",
+                text = String.format(stringResource(R.string.address_print_hub), order.address),
                 fontSize = 16.sp,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Дата создания: ${order.createdAt.formatToString()}",
+                text = String.format(
+                    stringResource(R.string.date_of_create),
+                    order.createdAt.formatToString()
+                ),
                 fontSize = 16.sp
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Дата обновления: ${order.updatedAt.formatToString()}",
+                text = String.format(
+                    stringResource(R.string.date_of_last_change),
+                    order.updatedAt.formatToString()
+                ),
                 fontSize = 16.sp,
             )
         }

@@ -39,9 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.moevm.printhubapp.R
-import ru.moevm.printhubapp.presentation.client.state.GetOrderState
-import ru.moevm.printhubapp.presentation.client.viewmodels.GetOrderViewModel
+import ru.moevm.printhubapp.presentation.client.state.OrderDetailsState
+import ru.moevm.printhubapp.presentation.client.viewmodels.OrderDetailsViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
+import ru.moevm.printhubapp.utils.getStatusColor
 
 @Composable
 fun OrderDetailsScreen(
@@ -49,71 +50,70 @@ fun OrderDetailsScreen(
     onAbout: () -> Unit,
     orderId: String
 ) {
-    val viewModel: GetOrderViewModel = hiltViewModel()
+    val viewModel: OrderDetailsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(orderId) {
         viewModel.getOrder(orderId)
     }
-
-    when (state) {
-        is GetOrderState.Success -> {
-            val order = (state as GetOrderState.Success).order
-            val isReject = order.rejectReason.isNotEmpty()
-            Scaffold(
-                topBar = {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(AppTheme.colors.orange10)
-                            .padding(top = 32.dp)
+    Scaffold(
+        topBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AppTheme.colors.orange10)
+                    .padding(top = 32.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(
-                                    modifier = Modifier.clickable { onBack() },
-                                    painter = painterResource(R.drawable.back_arrow_ic),
-                                    contentDescription = null,
-                                    tint = AppTheme.colors.black9
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                    text = String.format(
-                                        stringResource(R.string.order_details_title),
-                                        order.number
-                                    ),
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = AppTheme.colors.black9
-                                )
-                            }
-                            Icon(
-                                modifier = Modifier.clickable { onAbout() },
-                                painter = painterResource(R.drawable.info_ic),
-                                contentDescription = null,
-                                tint = AppTheme.colors.black9
-                            )
-                        }
-                        HorizontalDivider(
+                        Icon(
+                            modifier = Modifier.clickable { onBack() },
+                            painter = painterResource(R.drawable.back_arrow_ic),
+                            contentDescription = null,
+                            tint = AppTheme.colors.black9
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        val id = if(state is OrderDetailsState.Success) (state as OrderDetailsState.Success).order.number else ""
+                        Text(
+                            text = String.format(
+                                stringResource(R.string.order_details_title),
+                                id
+                            ),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.SemiBold,
                             color = AppTheme.colors.black9
                         )
                     }
+                    Icon(
+                        modifier = Modifier.clickable { onAbout() },
+                        painter = painterResource(R.drawable.info_ic),
+                        contentDescription = null,
+                        tint = AppTheme.colors.black9
+                    )
                 }
-            ) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(16.dp)
-                ) {
+                HorizontalDivider(
+                    color = AppTheme.colors.black9
+                )
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            when (state) {
+                is OrderDetailsState.Success -> {
+                    val order = (state as OrderDetailsState.Success).order
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -125,7 +125,10 @@ fun OrderDetailsScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             modifier = Modifier
-                                .background(getStatusColor(order.status), RoundedCornerShape(10.dp))
+                                .background(
+                                    getStatusColor(order.status),
+                                    RoundedCornerShape(10.dp)
+                                )
                                 .padding(vertical = 4.dp, horizontal = 8.dp),
                             text = order.status,
                             fontSize = 16.sp,
@@ -157,12 +160,14 @@ fun OrderDetailsScreen(
                         fontWeight = FontWeight.SemiBold,
                         color = AppTheme.colors.black9
                     )
-                    Spacer(Modifier.height(16.dp))
-                    Comment(
-                        titleId = R.string.placeholder_comment,
-                        comment = order.comment
-                    )
-                    if (isReject) {
+                    if(order.comment.isNotEmpty()) {
+                        Spacer(Modifier.height(16.dp))
+                        Comment(
+                            titleId = R.string.placeholder_comment,
+                            comment = order.comment
+                        )
+                    }
+                    if (order.rejectReason.isNotEmpty()) {
                         Spacer(Modifier.height(16.dp))
                         Comment(
                             titleId = R.string.reason_reject,
@@ -170,12 +175,22 @@ fun OrderDetailsScreen(
                         )
                     }
                 }
+                is OrderDetailsState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        CircularProgressIndicator(
+                            color = AppTheme.colors.orange10,
+                        )
+                    }
+                }
+                else -> {}
             }
         }
-
-        else -> {}
     }
 }
+
 
 @Composable
 private fun DetailsRow(
@@ -221,9 +236,8 @@ private fun DetailsRow(
 @Composable
 private fun Comment(
     titleId: Int,
-    comment: String,
-
-    ) {
+    comment: String
+) {
     Column {
         Text(
             modifier = Modifier.padding(bottom = 4.dp),

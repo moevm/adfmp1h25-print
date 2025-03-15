@@ -1,17 +1,16 @@
 package ru.moevm.printhubapp.presentation.splash
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
 fun SplashScreen(
@@ -35,9 +34,6 @@ fun SplashScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(R.drawable.logo_ic),
-            contentDescription = null
-        )
+        CircularProgressIndicator(color = AppTheme.colors.orange10)
     }
 } 

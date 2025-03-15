@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.client.components
+package ru.moevm.printhubapp.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -10,6 +10,7 @@ fun getStatusColor(status: String): Color {
         "В работе" -> AppTheme.colors.yellow
         "Готов к получению" -> AppTheme.colors.green8
         "Отказ" -> AppTheme.colors.red
+        "Выполнен" -> AppTheme.colors.green9
         else -> AppTheme.colors.gray7
     }
 }
