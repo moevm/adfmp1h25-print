@@ -1,5 +1,6 @@
 package ru.moevm.printhubapp.data.repository
 
+import android.content.SharedPreferences
 import android.util.Log
 import ru.moevm.printhubapp.data.mapper.toEntity
 import ru.moevm.printhubapp.data.model.OrderDto
@@ -7,19 +8,23 @@ import ru.moevm.printhubapp.domain.entity.Order
 import ru.moevm.printhubapp.domain.repository.OrdersRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import ru.moevm.printhubapp.utils.Constants.UID_STRING
 
 class OrdersRepositoryImpl(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val sharedPreferences: SharedPreferences
 ) : OrdersRepository {
 
     private val orders = db.collection("orders")
     private val users = db.collection("users")
 
-    override suspend fun getClientOrders(id: String): List<Order> {
+    private val userUid = sharedPreferences.getString(UID_STRING, "") ?: ""
+
+    override suspend fun getClientOrders(): List<Order> {
         val ordersList = mutableListOf<Order>()
 
         try {
-            val querySnapshot = orders.whereEqualTo("client_id", id).get().await()
+            val querySnapshot = orders.whereEqualTo("client_id", userUid).get().await()
             Log.d("OrderListScreen", "Found ${querySnapshot.documents.size} raw documents")
 
             for (document in querySnapshot.documents) {

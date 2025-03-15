@@ -1,7 +1,5 @@
 package ru.moevm.printhubapp.presentation.client.components
 
-import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,8 +39,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.moevm.printhubapp.R
-import ru.moevm.printhubapp.presentation.client.state.GetClientOrdersState
-import ru.moevm.printhubapp.presentation.client.viewmodels.GetClientOrdersViewModel
+import ru.moevm.printhubapp.presentation.client.state.MainClientState
+import ru.moevm.printhubapp.presentation.client.viewmodels.MainClientViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
@@ -52,15 +50,9 @@ fun MainClientScreen(
     addOrder: () -> Unit,
     showOrderDetails: (Any?) -> Unit
 ) {
-    val context = LocalContext.current
-    val sharedPreferences = context.getSharedPreferences("user_uid", Context.MODE_PRIVATE)
 
-    val viewModel: GetClientOrdersViewModel = hiltViewModel()
+    val viewModel: MainClientViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
-
-    val uid = sharedPreferences.getString("uid_current_user", "") ?: ""
-    Log.d("MainClient", "Getting orders for client: $uid")
-    viewModel.getClientOrders(uid)
 
     Scaffold(
         topBar = {
@@ -141,22 +133,23 @@ fun MainClientScreen(
     { paddingValues ->
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
         ){
-            when (state)
-            {
-                is GetClientOrdersState.Success -> {
-                    val orders = (state as GetClientOrdersState.Success).orders
+            when (state) {
+                is MainClientState.Success -> {
+                    val orders = (state as MainClientState.Success).orders
                     if (orders.isEmpty()) {
                         Text(
                             text = "У вас пока нет заказов",
                             fontSize = 18.sp,
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(16.dp),
+                            color = AppTheme.colors.gray7
                         )
                     } else {
                         LazyColumn(
+                            modifier = Modifier.align(Alignment.TopCenter),
                             contentPadding = PaddingValues(
                                 top = 16.dp,
                                 start = 16.dp,
@@ -166,10 +159,19 @@ fun MainClientScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(orders.size) { index ->
-                                OrderCard(order = orders[index], showOrderDetails = { showOrderDetails(orders[index].id) })
+                                OrderCard(
+                                    order = orders[index],
+                                    showOrderDetails = { showOrderDetails(orders[index].id) }
+                                )
                             }
                         }
                     }
+                }
+                is MainClientState.Loading -> {
+                    CircularProgressIndicator(
+                        color = AppTheme.colors.orange10,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
                 else -> {
                 }

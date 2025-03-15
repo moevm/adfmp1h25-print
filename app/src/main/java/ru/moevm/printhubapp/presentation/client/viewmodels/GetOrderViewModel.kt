@@ -1,11 +1,8 @@
 package ru.moevm.printhubapp.presentation.client.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ru.moevm.printhubapp.domain.usecases.GetClientOrdersUseCase
 import ru.moevm.printhubapp.domain.usecases.GetOrderUseCase
-import ru.moevm.printhubapp.presentation.client.state.GetClientOrdersState
 import ru.moevm.printhubapp.presentation.client.state.GetOrderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

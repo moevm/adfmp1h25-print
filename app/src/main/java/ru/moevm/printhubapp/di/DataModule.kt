@@ -34,9 +34,10 @@ object DataModule {
     @Provides
     @Singleton
     fun provideOrdersRepository(
-        db: FirebaseFirestore
+        db: FirebaseFirestore,
+        sharedPreferences: SharedPreferences
     ): OrdersRepository {
-        return OrdersRepositoryImpl(db)
+        return OrdersRepositoryImpl(db, sharedPreferences)
     }
 
     @Provides
