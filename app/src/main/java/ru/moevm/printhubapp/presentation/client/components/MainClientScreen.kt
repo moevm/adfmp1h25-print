@@ -1,5 +1,7 @@
-package ru.moevm.printhubapp.presentation.client
+package ru.moevm.printhubapp.presentation.client.components
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -20,21 +23,26 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.presentation.client.state.GetClientOrdersState
+import ru.moevm.printhubapp.presentation.client.viewmodels.GetClientOrdersViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
@@ -42,8 +50,18 @@ fun MainClientScreen(
     navHostController: NavHostController,
     onAbout: () -> Unit,
     addOrder: () -> Unit,
-    showOrderDetails: () -> Unit
+    showOrderDetails: (Any?) -> Unit
 ) {
+    val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("user_uid", Context.MODE_PRIVATE)
+
+    val viewModel: GetClientOrdersViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsState()
+
+    val uid = sharedPreferences.getString("uid_current_user", "") ?: ""
+    Log.d("MainClient", "Getting orders for client: $uid")
+    viewModel.getClientOrders(uid)
+
     Scaffold(
         topBar = {
             Column(
@@ -90,6 +108,7 @@ fun MainClientScreen(
                         NavigationItem.Home,
                         NavigationItem.Profile
                     )
+
                     items.forEach { item ->
                         val selected = navBackStackEntry?.destination?.hierarchy?.any {
                             it.route == item.screen.route
@@ -118,26 +137,41 @@ fun MainClientScreen(
                 }
             }
         }
-    ) { paddingValues ->
+    )
+    { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
-        ) {
-            LazyColumn(
-                contentPadding = PaddingValues(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                for (i in 0..5) {
-                    item {
-                        OrderCard(showOrderDetails)
+        ){
+            when (state)
+            {
+                is GetClientOrdersState.Success -> {
+                    val orders = (state as GetClientOrdersState.Success).orders
+                    if (orders.isEmpty()) {
+                        Text(
+                            text = "У вас пока нет заказов",
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    } else {
+                        LazyColumn(
+                            contentPadding = PaddingValues(
+                                top = 16.dp,
+                                start = 16.dp,
+                                end = 16.dp,
+                                bottom = 16.dp
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(orders.size) { index ->
+                                OrderCard(order = orders[index], showOrderDetails = { showOrderDetails(orders[index].id) })
+                            }
+                        }
                     }
+                }
+                else -> {
                 }
             }
             FloatingActionButton(

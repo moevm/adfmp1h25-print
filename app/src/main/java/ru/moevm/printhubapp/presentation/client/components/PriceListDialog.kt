@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.client
+package ru.moevm.printhubapp.presentation.client.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

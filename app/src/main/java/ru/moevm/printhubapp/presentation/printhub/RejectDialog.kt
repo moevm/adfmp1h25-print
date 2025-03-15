@@ -53,7 +53,7 @@ fun RejectDialog(
                     text = stringResource(R.string.reject_dialog_title),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium,
-                    color = AppTheme.colors.textTitleDialog
+                    color = AppTheme.colors.black9
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(

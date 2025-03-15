@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.client
+package ru.moevm.printhubapp.presentation.client.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -43,7 +43,7 @@ fun LogoutDialog(
                     text = stringResource(R.string.logout_dialog_title),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium,
-                    color = AppTheme.colors.textTitleDialog
+                    color = AppTheme.colors.black9
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(

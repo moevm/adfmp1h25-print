@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.client
+package ru.moevm.printhubapp.presentation.client.components
 
 import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.navigation.Screen
@@ -8,12 +8,12 @@ sealed class NavigationItem(
     val screen: Screen
 ) {
 
-    object Home : NavigationItem (
+    object Home : NavigationItem(
         titleResId =  R.string.navigation_item_home,
         screen = Screen.MainClientScreen
     )
 
-    object Profile : NavigationItem (
+    object Profile : NavigationItem(
         titleResId =  R.string.navigation_item_profile,
         screen = Screen.ClientProfileScreen
     )

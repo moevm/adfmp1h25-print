@@ -35,7 +35,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.moevm.printhubapp.R
-import ru.moevm.printhubapp.presentation.client.LogoutDialog
+import ru.moevm.printhubapp.presentation.client.components.LogoutDialog
 import ru.moevm.printhubapp.presentation.splash.SplashViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 

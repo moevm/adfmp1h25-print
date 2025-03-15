@@ -7,4 +7,3 @@ data class Registration(
     val nameCompany: String = "",
     val address: String = ""
 )
-

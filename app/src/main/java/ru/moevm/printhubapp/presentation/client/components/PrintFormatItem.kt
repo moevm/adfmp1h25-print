@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.client
+package ru.moevm.printhubapp.presentation.client.components
 
 import ru.moevm.printhubapp.R
 
