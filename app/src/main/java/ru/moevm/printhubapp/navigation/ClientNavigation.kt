@@ -18,7 +18,7 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
                 navHostController.navigate(Screen.AboutScreen.route)
             },
             addOrder = {
-                navHostController.navigate(Screen.AddOrderParametersScreen.route)
+                navHostController.navigate(Screen.AddOrderScreen.route)
             },
             showOrderDetails = {
                 navHostController.navigate(Screen.OrderDetailsScreen.route)
@@ -37,7 +37,7 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
                 navHostController.popBackStack()
             },
             onNavigateTo = {
-                navHostController.navigate(Screen.SuccessScreen.route)
+                navHostController.navigate(Screen.AddOrderParametersScreen.route)
             }
         )
     }
@@ -52,7 +52,7 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
                 navHostController.popBackStack()
             },
             createOrder = {
-                navHostController.navigate(Screen.AddOrderScreen.route)
+                navHostController.navigate(Screen.SuccessScreen.route)
             }
         )
     }
