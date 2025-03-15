@@ -38,7 +38,7 @@ fun OrderCard(
         ) {
             Text(
                 modifier = Modifier
-                    .background(AppTheme.colors.gray7, RoundedCornerShape(10.dp))
+                    .background(getStatusColor(order.status), RoundedCornerShape(10.dp))
                     .padding(vertical = 4.dp, horizontal = 8.dp),
                 text = order.status,
                 fontSize = 16.sp,
