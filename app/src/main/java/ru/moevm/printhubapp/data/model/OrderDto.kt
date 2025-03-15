@@ -1,5 +1,4 @@
 package ru.moevm.printhubapp.data.model
-
 import com.google.firebase.Timestamp
 
 data class OrderDto(

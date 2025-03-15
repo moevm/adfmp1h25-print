@@ -44,6 +44,16 @@ import ru.moevm.printhubapp.presentation.client.viewmodels.GetOrderViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
+fun getStatusColor(status: String): Color {
+    return when (status) {
+        "В работе" -> AppTheme.colors.yellow
+        "Готов к получению" -> AppTheme.colors.green8
+        "Отказ" -> AppTheme.colors.red
+        else -> AppTheme.colors.gray7
+    }
+}
+
+@Composable
 fun OrderDetailsScreen(
     onBack: () -> Unit,
     onAbout: () -> Unit,
@@ -120,7 +130,7 @@ fun OrderDetailsScreen(
                         Text(
                             text = "Статус заказа",
                             fontSize = 16.sp,
-                            color = AppTheme.colors.gray7
+                            color = getStatusColor(order.status)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
