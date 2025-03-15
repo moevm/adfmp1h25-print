@@ -19,13 +19,16 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _userRole = MutableStateFlow<Role>(Role.INIT)
+    private val _userMail = MutableStateFlow<String>("")
     val userRole: StateFlow<Role> get() = _userRole.asStateFlow()
+    val userMail: StateFlow<String> get() = _userMail.asStateFlow()
 
     init {
         viewModelScope.launch {
             if (checkLoginUseCase()) {
                 getUserUseCase { user ->
                     _userRole.value = user.role
+                    _userMail.value = user.mail
                 }
             }
         }
