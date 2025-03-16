@@ -23,7 +23,8 @@ class OrdersRepositoryImpl(
     private val users = db.collection("users")
     private val statistics = db.collection("statistics")
 
-    private val userUid = sharedPreferences.getString(UID_STRING, "") ?: ""
+    private val userUid: String
+        get() = sharedPreferences.getString(UID_STRING, "") ?: ""
 
     override suspend fun getClientOrders(): List<Order> {
         val ordersList = mutableListOf<Order>()

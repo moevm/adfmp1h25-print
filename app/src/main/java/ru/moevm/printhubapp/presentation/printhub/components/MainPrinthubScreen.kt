@@ -3,9 +3,11 @@ package ru.moevm.printhubapp.presentation.printhub.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,6 +51,7 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
+import ru.moevm.printhubapp.navigation.Screen
 
 @Composable
 fun MainPrinthubScreen(
@@ -61,10 +64,7 @@ fun MainPrinthubScreen(
 
     val viewModel: MainPrinthubViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.getPrinthubOrders()
-    }
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
 
     LaunchedEffect(searchQuery) {
         searchQuery
@@ -72,6 +72,14 @@ fun MainPrinthubScreen(
             .collectLatest { query ->
                 viewModel.searchOrders(query)
             }
+    }
+
+    LaunchedEffect(Unit) {
+        navBackStackEntry?.destination?.route?.let { route ->
+            if (route == Screen.MainPrinthubScreen.route) {
+                viewModel.getPrinthubOrders()
+            }
+        }
     }
 
     Scaffold(
@@ -115,7 +123,6 @@ fun MainPrinthubScreen(
                 NavigationBar(
                     containerColor = AppTheme.colors.orange10,
                 ) {
-                    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
                     val items = listOf(
                         PrinthubNavigationItem.Home,
                         PrinthubNavigationItem.Profile
@@ -189,42 +196,44 @@ fun MainPrinthubScreen(
                     focusedBorderColor = AppTheme.colors.gray7
                 )
             )
-            when (state) {
-                is MainPrinthubState.Success -> {
-                    val orders = (state as MainPrinthubState.Success).orders
-                    if (orders.isEmpty()) {
-                        Text(
-                            text = "У вас пока нет заказов",
-                            fontSize = 18.sp,
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
-                            color = AppTheme.colors.gray7
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                when (state) {
+                    is MainPrinthubState.Loading -> {
+                        CircularProgressIndicator(
+                            color = AppTheme.colors.orange10
                         )
-                    } else {
-                        LazyColumn(
-                            contentPadding = PaddingValues(
-                                start = 16.dp,
-                                end = 16.dp,
-                                bottom = 16.dp
-                            ),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(orders.size) { index ->
-                                val order = orders.reversed()[index]
-                                OrderPrinthubCard(
-                                    order = order,
-                                    openDetails = { onOrderDetails(order.id) }
-                                )
+                    }
+                    is MainPrinthubState.Success -> {
+                        val orders = (state as MainPrinthubState.Success).orders
+                        if (orders.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.no_order),
+                                fontSize = 18.sp,
+                                color = AppTheme.colors.gray7
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(bottom = 16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(orders.size) { index ->
+                                    val order = orders[index]
+                                    OrderPrinthubCard(
+                                        order = order,
+                                        openDetails = { onOrderDetails(order.id) }
+                                    )
+                                }
                             }
                         }
                     }
-                }
-                is MainPrinthubState.Loading -> {
-                    CircularProgressIndicator(
-                        color = AppTheme.colors.orange10,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                }
-                else -> {
+                    else -> {}
                 }
             }
         }
