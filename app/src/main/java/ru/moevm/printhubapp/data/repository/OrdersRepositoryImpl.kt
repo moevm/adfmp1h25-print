@@ -55,6 +55,27 @@ class OrdersRepositoryImpl(
         return ordersList
     }
 
+    override suspend fun getPrinthubOrders(): List<Order> {
+        val ordersList = mutableListOf<Order>()
+
+        try {
+            val querySnapshot = orders.whereEqualTo("company_id", userUid).get().await()
+            Log.d("OrderListScreen", "Found ${querySnapshot.documents.size} raw documents")
+
+            for (document in querySnapshot.documents) {
+                val orderDto = document.toObject(OrderDto::class.java)
+                if (orderDto != null) {
+                    val order = orderDto.toEntity()
+                    ordersList.add(order)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("OrderListScreen", "Ошибка загрузки заказов: ${e.message}")
+        }
+
+        return ordersList
+    }
+
     override suspend fun getOrder(id: String): Order {
         val orderDto = orders.document(id).get().await().toObject(OrderDto::class.java)
         val order = orderDto?.toEntity()

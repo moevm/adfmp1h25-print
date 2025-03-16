@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.printhub
+package ru.moevm.printhubapp.presentation.printhub.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

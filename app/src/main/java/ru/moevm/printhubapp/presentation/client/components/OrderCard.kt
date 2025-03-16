@@ -32,7 +32,7 @@ fun OrderCard(
         modifier = Modifier.fillMaxWidth(),
         onClick = { showOrderDetails(order.id) },
         colors = CardDefaults.cardColors(
-            containerColor = AppTheme.colors.orange3 ,
+            containerColor = AppTheme.colors.orange3,
             contentColor = AppTheme.colors.black9,
         ),
     ) {

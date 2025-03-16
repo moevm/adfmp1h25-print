@@ -22,7 +22,7 @@ class AddOrderViewModel @Inject constructor(
         getPrinthubs()
     }
 
-    fun getPrinthubs() {
+    private fun getPrinthubs() {
         viewModelScope.launch {
             _state.value = AddOrderState.Loading
 

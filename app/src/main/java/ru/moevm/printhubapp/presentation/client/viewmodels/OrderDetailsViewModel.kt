@@ -15,13 +15,13 @@ import javax.inject.Inject
 class OrderDetailsViewModel @Inject constructor(
     private val getOrderUseCase: GetOrderUseCase
 ) : ViewModel() {
+
     private val _state = MutableStateFlow<OrderDetailsState>(OrderDetailsState.Init)
     val state: StateFlow<OrderDetailsState> get() = _state.asStateFlow()
 
     fun getOrder(orderId: String) {
         viewModelScope.launch {
             _state.value = OrderDetailsState.Loading
-
             try {
                 val order = getOrderUseCase(orderId)
                 _state.value = OrderDetailsState.Success(order)

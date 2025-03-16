@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.printhub
+package ru.moevm.printhubapp.presentation.printhub.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -18,15 +18,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.domain.entity.Order
+import ru.moevm.printhubapp.presentation.client.utils.formatToString
 import ru.moevm.printhubapp.ui.theme.AppTheme
+import ru.moevm.printhubapp.utils.getStatusColor
 
 @Composable
 fun OrderPrinthubCard(
-    openDetails: () -> Unit
+    order: Order,
+    openDetails: (String) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { openDetails() },
+        onClick = { openDetails(order.id) },
         colors = CardDefaults.cardColors(
             containerColor = AppTheme.colors.orange3 ,
             contentColor = AppTheme.colors.black9,
@@ -37,25 +41,31 @@ fun OrderPrinthubCard(
         ) {
             Text(
                 modifier = Modifier
-                    .background(AppTheme.colors.gray7, RoundedCornerShape(10.dp))
+                    .background(getStatusColor(order.status), RoundedCornerShape(10.dp))
                     .padding(vertical = 4.dp, horizontal = 8.dp),
-                text = stringResource(R.string.status_new),
+                text = if (order.status == "Создан") "Новый" else order.status,
                 fontSize = 16.sp,
                 color = Color.White
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.order_number),
+                text = String.format(stringResource(R.string.order_number), order.number),
                 fontSize = 16.sp,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.date_of_create),
-                fontSize = 16.sp,
+                text = String.format(
+                    stringResource(R.string.date_of_create),
+                    order.createdAt.formatToString()
+                ),
+                fontSize = 16.sp
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.date_of_last_change),
+                text = String.format(
+                    stringResource(R.string.date_of_last_change),
+                    order.updatedAt.formatToString()
+                ),
                 fontSize = 16.sp,
             )
         }
@@ -65,5 +75,9 @@ fun OrderPrinthubCard(
 @Preview
 @Composable
 private fun OrderPrinthubCardPreview() {
-    OrderPrinthubCard({})
+    val order = Order(
+        id = "1",
+        status = "В процессе"
+    )
+    OrderPrinthubCard(order = order, {})
 }

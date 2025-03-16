@@ -5,6 +5,7 @@ import ru.moevm.printhubapp.domain.entity.result.RequestResult
 
 interface OrdersRepository {
     suspend fun getClientOrders() : List<Order>
+    suspend fun getPrinthubOrders() : List<Order>
     suspend fun getOrder(id: String) : Order
     fun createOrder(newOrder: Order, callback: (RequestResult<Unit>) -> Unit)
 }
