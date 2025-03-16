@@ -259,7 +259,7 @@ fun MainClientScreen(
                                     ) {
                                         Icon(
                                             modifier = Modifier.size(20.dp),
-                                            painter = painterResource(R.drawable.filter_ic),
+                                            painter = painterResource(R.drawable.sort_ic),
                                             contentDescription = null,
                                             tint = Color.White
                                         )
