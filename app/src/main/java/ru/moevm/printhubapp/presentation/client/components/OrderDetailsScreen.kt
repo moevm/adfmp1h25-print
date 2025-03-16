@@ -40,7 +40,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.platform.LocalContext
+import android.content.Context
+import android.content.Intent
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.domain.entity.Order
 import ru.moevm.printhubapp.presentation.client.state.OrderDetailsState
 import ru.moevm.printhubapp.presentation.client.viewmodels.OrderDetailsViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
@@ -55,6 +59,7 @@ fun OrderDetailsScreen(
 ) {
     val viewModel: OrderDetailsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(orderId) {
         viewModel.getOrder(orderId)
@@ -188,7 +193,12 @@ fun OrderDetailsScreen(
                             .padding(16.dp)
                     ) {
                         FloatingActionButton(
-                            onClick = { },
+                            onClick = {
+                                if (state is OrderDetailsState.Success) {
+                                    val order = (state as OrderDetailsState.Success).order
+                                    shareOrderDetails(context, order)
+                                }
+                            },
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .padding(16.dp),
@@ -298,6 +308,34 @@ private fun Comment(
             )
         )
     }
+}
+
+private fun shareOrderDetails(context: Context, order: Order) {
+    val shareText = formatOrderDetails(order)
+    val sendIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, shareText)
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, null)
+    context.startActivity(shareIntent)
+}
+
+private fun formatOrderDetails(order: Order): String {
+    return """
+        Заказ №${order.number}
+        Статус: ${getDisplayStatus(order.status)}
+        
+        Название печатной компании: ${order.nameCompany}
+        Адрес: ${order.address}
+        
+        Формат: ${order.format}
+        Количество листов: ${order.paperCount}
+        
+        Итого: ${order.totalPrice} ₽
+        ${if (order.comment.isNotEmpty()) "\nКомментарий: ${order.comment}" else ""}
+        ${if (order.rejectReason.isNotEmpty()) "\nПричина отказа: ${order.rejectReason}" else ""}
+    """.trimIndent()
 }
 
 @Preview(showBackground = true)
