@@ -1,5 +1,6 @@
 package ru.moevm.printhubapp.presentation.client.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +44,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -70,7 +72,10 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.navigation.Screen
 import ru.moevm.printhubapp.presentation.client.state.MainClientState
 import ru.moevm.printhubapp.presentation.client.viewmodels.MainClientViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
@@ -89,6 +94,14 @@ fun MainClientScreen(
     var search by remember { mutableStateOf("") }
     val searchQuery = remember { MutableStateFlow("") }
 
+    LaunchedEffect(searchQuery) {
+        searchQuery
+            .debounce(500)
+            .collectLatest { query ->
+                viewModel.searchOrders(query)
+            }
+    }
+
     var openFilterBottomSheet by rememberSaveable { mutableStateOf(false) }
     var skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -106,6 +119,16 @@ fun MainClientScreen(
     val scopeFormatPrinter = rememberCoroutineScope()
     val filterFormatPrinterBottomSheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = skipFormatPrinterPartiallyExpanded)
+
+    var priceFilterApplied by rememberSaveable { mutableStateOf(false) }
+    var minPrice by rememberSaveable { mutableStateOf("0") }
+    var maxPrice by rememberSaveable { mutableStateOf("10000") }
+
+    var formatFilterApplied by rememberSaveable { mutableStateOf(false) }
+    var selectedFormats by rememberSaveable { mutableStateOf(setOf<String>()) }
+
+    var selectedStatuses by rememberSaveable { mutableStateOf(setOf<String>()) }
+
     Scaffold(
         topBar = {
             Column(
@@ -191,8 +214,9 @@ fun MainClientScreen(
         ) {
             when (state) {
                 is MainClientState.Success -> {
+                    Log.d("orders", (state as MainClientState.Success).orders.toString())
                     val orders = (state as MainClientState.Success).orders
-                    if (orders.isEmpty()) {
+                    if (orders.isEmpty() && selectedStatuses.isEmpty() && !priceFilterApplied && selectedFormats.isEmpty()) {
                         Text(
                             text = "У вас пока нет заказов",
                             fontSize = 18.sp,
@@ -252,7 +276,7 @@ fun MainClientScreen(
                                                 openFilterBottomSheet = true
                                             }
                                             .background(
-                                                AppTheme.colors.gray7,
+                                                AppTheme.colors.orange10,
                                                 RoundedCornerShape(12.dp)
                                             )
                                             .padding(4.dp)
@@ -261,7 +285,7 @@ fun MainClientScreen(
                                             modifier = Modifier.size(20.dp),
                                             painter = painterResource(R.drawable.sort_ic),
                                             contentDescription = null,
-                                            tint = Color.White
+                                            tint = AppTheme.colors.black9
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -273,14 +297,14 @@ fun MainClientScreen(
                                                 openAmountFilterBottomSheet = true
                                             }
                                             .background(
-                                                AppTheme.colors.gray7,
+                                                if (priceFilterApplied) AppTheme.colors.orange10 else AppTheme.colors.gray7,
                                                 RoundedCornerShape(12.dp)
                                             )
                                             .padding(4.dp)
                                     ) {
                                         Text(
                                             text = "Цена",
-                                            color = Color.White
+                                            color = if (priceFilterApplied) AppTheme.colors.black9 else Color.White
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -292,99 +316,52 @@ fun MainClientScreen(
                                                 openFormatPrinterFilterBottomSheet = true
                                             }
                                             .background(
-                                                AppTheme.colors.gray7,
+                                                if (formatFilterApplied) AppTheme.colors.orange10 else AppTheme.colors.gray7,
                                                 RoundedCornerShape(12.dp)
                                             )
                                             .padding(4.dp)
                                     ) {
                                         Text(
                                             text = "Формат печати",
-                                            color = Color.White
+                                            color = if (formatFilterApplied) AppTheme.colors.black9 else Color.White
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(4.dp))
                                 }
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                AppTheme.colors.gray7,
-                                                RoundedCornerShape(12.dp)
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "Создан",
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                AppTheme.colors.gray7,
-                                                RoundedCornerShape(12.dp)
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "В работе",
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                AppTheme.colors.gray7,
-                                                RoundedCornerShape(12.dp)
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "Ожидает получения",
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                AppTheme.colors.gray7,
-                                                RoundedCornerShape(12.dp)
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "Получен",
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                AppTheme.colors.gray7,
-                                                RoundedCornerShape(12.dp)
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "Отказ",
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
+                                val statuses = listOf(
+                                    "Создан" to "Создан",
+                                    "В работе" to "В работе",
+                                    "Ожидает получения" to "Готов к получению",
+                                    "Выполнен" to "Получен",
+                                    "Отказ" to "Отказ"
+                                )
+                                items(statuses.size) { index ->
+                                    val (statusCode, displayText) = statuses[index]
+                                    val isSelected = selectedStatuses.contains(statusCode)
 
+                                    Box(
+                                        modifier = Modifier
+                                            .clickable {
+                                                selectedStatuses = if (isSelected) {
+                                                    selectedStatuses - statusCode
+                                                } else {
+                                                    selectedStatuses + statusCode
+                                                }
+                                                viewModel.filterByStatuses(selectedStatuses)
+                                            }
+                                            .background(
+                                                if (isSelected) AppTheme.colors.orange10 else AppTheme.colors.gray7,
+                                                RoundedCornerShape(12.dp)
+                                            )
+                                            .padding(4.dp)
+                                    ) {
+                                        Text(
+                                            text = displayText,
+                                            color = if (isSelected) AppTheme.colors.black9 else Color.White
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                }
                             }
                             LazyColumn(
                                 modifier = Modifier.weight(1f),
@@ -393,11 +370,13 @@ fun MainClientScreen(
                                 ),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(orders.sortedByDescending { it.updatedAt }.size) { index ->
-                                    val order = orders.sortedByDescending { it.updatedAt }[index]
+                                items(orders.size) { index ->
+                                    val order = orders[index]
                                     OrderCard(
                                         order = order,
-                                        showOrderDetails = { showOrderDetails(order.id) }
+                                        showOrderDetails = { orderId ->
+                                            showOrderDetails(orderId)
+                                        }
                                     )
                                 }
                             }
@@ -440,22 +419,32 @@ fun MainClientScreen(
         }
     }
 
-    if (openAmountFilterBottomSheet) {
-        AmountFilterBottomSheet(
-            filterAmountBottomSheetState,
-            scopeAmount
-        ) {
-            openAmountFilterBottomSheet = false
-        }
-    }
-
     if (openFormatPrinterFilterBottomSheet) {
         FormatPrintBottomSheet(
-            filterFormatPrinterBottomSheetState,
-            scopeFormatPrinter
-        ) {
-            openFormatPrinterFilterBottomSheet = false
-        }
+            sheetState = filterFormatPrinterBottomSheetState,
+            scope = scopeFormatPrinter,
+            openFormatPrinterFilterBottomSheet = { openFormatPrinterFilterBottomSheet = false },
+            selectedFormats = selectedFormats,
+            onFormatSelectionChanged = { newFormats, isActive ->
+                selectedFormats = newFormats
+                formatFilterApplied = isActive
+            }
+        )
+    }
+
+    if (openAmountFilterBottomSheet) {
+        AmountFilterBottomSheet(
+            sheetState = filterAmountBottomSheetState,
+            scope = scopeAmount,
+            openAmountFilterBottomSheet = { openAmountFilterBottomSheet = false },
+            minPrice = minPrice,
+            maxPrice = maxPrice,
+            onPriceRangeChanged = { min, max, isActive ->
+                minPrice = min
+                maxPrice = max
+                priceFilterApplied = isActive
+            }
+        )
     }
 }
 
@@ -464,9 +453,10 @@ fun MainClientScreen(
 private fun FormatPrintBottomSheet(
     sheetState: SheetState,
     scope: CoroutineScope,
-    openFormatPrinterFilterBottomSheet: () -> Unit
+    openFormatPrinterFilterBottomSheet: () -> Unit,
+    selectedFormats: Set<String>,
+    onFormatSelectionChanged: (Set<String>, Boolean) -> Unit
 ) {
-    val checkedStates = remember { mutableStateListOf(false, false, false, false, false, false) }
     val filterOptions = listOf(
         "A1",
         "A2",
@@ -475,6 +465,13 @@ private fun FormatPrintBottomSheet(
         "A5",
         "A6"
     )
+    val checkedStates = remember {
+        mutableStateListOf<Boolean>().apply {
+            addAll(filterOptions.map { selectedFormats.contains(it) })
+        }
+    }
+    val viewModel: MainClientViewModel = hiltViewModel()
+
     ModalBottomSheet(
         onDismissRequest = { openFormatPrinterFilterBottomSheet() },
         sheetState = sheetState,
@@ -513,6 +510,13 @@ private fun FormatPrintBottomSheet(
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 onClick = {
+                    val newSelectedFormats = filterOptions
+                        .filterIndexed { index, _ -> checkedStates[index] }
+                        .toSet()
+
+                    onFormatSelectionChanged(newSelectedFormats, newSelectedFormats.isNotEmpty())
+                    viewModel.filterByFormats(newSelectedFormats)
+
                     scope
                         .launch { sheetState.hide() }
                         .invokeOnCompletion {
@@ -569,10 +573,14 @@ private fun FormatPrintBottomSheet(
 private fun AmountFilterBottomSheet(
     sheetState: SheetState,
     scope: CoroutineScope,
-    openAmountFilterBottomSheet: () -> Unit
+    openAmountFilterBottomSheet: () -> Unit,
+    minPrice: String,
+    maxPrice: String,
+    onPriceRangeChanged: (String, String, Boolean) -> Unit
 ) {
-    var inAmount by remember { mutableStateOf("0") }
-    var outAmount by remember { mutableStateOf("10000") }
+    var inAmount by remember { mutableStateOf(minPrice) }
+    var outAmount by remember { mutableStateOf(maxPrice) }
+    val viewModel: MainClientViewModel = hiltViewModel()
     ModalBottomSheet(
         onDismissRequest = { openAmountFilterBottomSheet() },
         sheetState = sheetState,
@@ -648,6 +656,14 @@ private fun AmountFilterBottomSheet(
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 onClick = {
+                    val min = inAmount.toIntOrNull() ?: 0
+                    val max = outAmount.toIntOrNull() ?: 10000
+                    val isFilterActive = (min != 0 || max != 10000)
+
+                    onPriceRangeChanged(inAmount, outAmount, isFilterActive)
+                    viewModel.filterByPriceRange(min, max)
+
+                    viewModel.filterByPriceRange(min, max)
                     scope
                         .launch { sheetState.hide() }
                         .invokeOnCompletion {
@@ -706,13 +722,19 @@ private fun FilterBottomSheet(
     scope: CoroutineScope,
     openFilterBottomSheet: () -> Unit
 ) {
+    val viewModel: MainClientViewModel = hiltViewModel()
+    val currentSortOption = remember { mutableStateOf(viewModel.getCurrentSortOption()) }
+
     val filterOptions = listOf(
-        "По дате создания: сначала новые",
-        "По дате создания: сначала старые",
-        "По дате обновления: сначала новые",
-        "По дате обновления: сначала старые"
+        "По дате создания: сначала новые" to MainClientViewModel.SortOption.CREATED_NEWEST_FIRST,
+        "По дате создания: сначала старые" to MainClientViewModel.SortOption.CREATED_OLDEST_FIRST,
+        "По дате обновления: сначала новые" to MainClientViewModel.SortOption.UPDATED_NEWEST_FIRST,
+        "По дате обновления: сначала старые" to MainClientViewModel.SortOption.UPDATED_OLDEST_FIRST
     )
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(filterOptions[0]) }
+
+    val initialSelectedText = filterOptions.first { it.second == currentSortOption.value }.first
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(initialSelectedText) }
+
     ModalBottomSheet(
         onDismissRequest = { openFilterBottomSheet() },
         sheetState = sheetState,
@@ -723,7 +745,7 @@ private fun FilterBottomSheet(
             Column(
                 modifier = Modifier.selectableGroup()
             ) {
-                filterOptions.forEach { text ->
+                filterOptions.forEach { (text, _) ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -757,6 +779,9 @@ private fun FilterBottomSheet(
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 onClick = {
+                    val sortOption = filterOptions.first { it.first == selectedOption }.second
+                    viewModel.sortOrders(sortOption)
+
                     scope
                         .launch { sheetState.hide() }
                         .invokeOnCompletion {
