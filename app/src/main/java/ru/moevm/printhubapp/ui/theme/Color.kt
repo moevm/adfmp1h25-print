@@ -21,6 +21,7 @@ data class AppColors(
     val green9: Color,
     val yellow: Color,
     val red: Color,
+    val textTitleDialog: Color,
     val materialColors: ColorScheme
 )
 
@@ -42,6 +43,7 @@ private val darkAppColors = AppColors(
     green9 = AppCustomColors.Green9,
     yellow = AppCustomColors.Yellow,
     red = AppCustomColors.Red,
+    textTitleDialog = AppCustomColors.Gray1,
     materialColors = darkColorScheme(
         background = AppCustomColors.Black9
     )
@@ -59,6 +61,7 @@ private val lightAppColors = AppColors(
     green9 = AppCustomColors.Green9,
     yellow = AppCustomColors.Yellow,
     red = AppCustomColors.Red,
+    textTitleDialog = AppCustomColors.Black9,
     materialColors = lightColorScheme(
         background = Color.White
     )
