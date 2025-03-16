@@ -36,12 +36,12 @@ fun PrintHubCard(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Печатный центр: ${printhub.nameCompany}",
+                text = String.format(stringResource(R.string.print_hub_name), printhub.nameCompany),
                 fontSize = 16.sp,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Адрес: ${printhub.address}",
+                text = String.format(stringResource(R.string.address_print_hub), printhub.address),
                 fontSize = 16.sp,
             )
         }

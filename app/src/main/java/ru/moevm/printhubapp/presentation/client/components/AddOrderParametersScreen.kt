@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -26,6 +27,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,9 +51,6 @@ import ru.moevm.printhubapp.presentation.client.state.AddOrderParametersState
 import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 import ru.moevm.printhubapp.utils.LIMIT_CHAR
-import com.google.firebase.Timestamp
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import kotlin.random.Random
 
 @Composable
@@ -64,8 +62,6 @@ fun AddOrderParametersScreen(
     companyId: String
 ) {
     val state = viewModel.state.collectAsState(AddOrderParametersState.Init).value
-    val userZoneId = ZoneId.systemDefault()
-    val currentTime = ZonedDateTime.now(userZoneId).toInstant()
 
     var totalPrice by remember { mutableStateOf(0) }
     var showPriceList by remember { mutableStateOf(false) }
@@ -73,6 +69,12 @@ fun AddOrderParametersScreen(
     var printFormat by remember { mutableStateOf(PrintFormatItem.A1) }
     var countList by remember { mutableStateOf(1) }
     var comment by remember { mutableStateOf("") }
+
+    LaunchedEffect(state) {
+        if(state is AddOrderParametersState.Success) {
+            onSuccess()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -128,95 +130,100 @@ fun AddOrderParametersScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             when (state) {
-                is AddOrderParametersState.Init -> { }
-                is AddOrderParametersState.Loading -> { /* Handle Loading state */ }
-                is AddOrderParametersState.Success -> { /* Handle Success state */ }
-                is AddOrderParametersState.ServerError -> { /* Handle ServerError state */ }
-                else -> {}
-            }
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                ShowPrice(
-                    modifier = Modifier
-                        .clickable { showPriceList = true }
-                        .background(AppTheme.colors.gray1, RoundedCornerShape(12.dp))
-                        .padding(vertical = 8.dp, horizontal = 16.dp)
-                        .align(Alignment.Start),
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                ChooseFormatPrint(
-                    currentId = selectedDropMenu
-                ){ new ->
-                    selectedDropMenu = new.value
-                    printFormat = new
-                    totalPrice = printFormat.price * countList
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                ChooseCountList(
-                    currentCountList = countList
-                ) { newCount ->
-                    countList = newCount
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                ChooseFile()
-                Spacer(modifier = Modifier.height(16.dp))
-                if(selectedDropMenu != R.string.select_format_print) {
-                    totalPrice = printFormat.price * countList
+                is AddOrderParametersState.Init -> {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        ShowPrice(
+                            modifier = Modifier
+                                .clickable { showPriceList = true }
+                                .background(AppTheme.colors.gray1, RoundedCornerShape(12.dp))
+                                .padding(vertical = 8.dp, horizontal = 16.dp)
+                                .align(Alignment.Start),
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ChooseFormatPrint(
+                            currentId = selectedDropMenu
+                        ){ new ->
+                            selectedDropMenu = new.value
+                            printFormat = new
+                            totalPrice = printFormat.price * countList
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ChooseCountList(
+                            currentCountList = countList
+                        ) { newCount ->
+                            countList = newCount
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ChooseFile()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        if(selectedDropMenu != R.string.select_format_print) {
+                            totalPrice = printFormat.price * countList
 
-                }
-                Text(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .background(AppTheme.colors.orange3, RoundedCornerShape(16.dp))
-                        .padding(vertical = 4.dp, horizontal = 8.dp),
-                    text = String.format(stringResource(R.string.total_price), totalPrice),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = AppTheme.colors.black9
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-                Comment(comment = comment, onCommentChange = { comment = it })
-            }
-            val isEnable = (selectedDropMenu != R.string.select_format_print)
-            Button(
-                onClick = {
-                    viewModel.createOrder(
-                        Order(
-                            id = "",
-                            clientId = "",
-                            companyId = companyId,
-                            number = Random.nextInt(1000000),
-                            format = printFormat.name,
-                            paperCount = countList,
-                            files = "",
-                            totalPrice = totalPrice,
-                            comment = comment,
-                            status = "Создан",
-                            rejectReason = "",
-                            createdAt = Timestamp(currentTime.epochSecond, currentTime.nano),
-                            updatedAt = Timestamp(currentTime.epochSecond, currentTime.nano)
+                        }
+                        Text(
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .background(AppTheme.colors.orange3, RoundedCornerShape(16.dp))
+                                .padding(vertical = 4.dp, horizontal = 8.dp),
+                            text = String.format(stringResource(R.string.total_price), totalPrice),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = AppTheme.colors.black9
+                        )
+                        Spacer(modifier = Modifier.height(32.dp))
+                        Comment(comment = comment, onCommentChange = { comment = it })
+                    }
+                    val isEnable = (selectedDropMenu != R.string.select_format_print)
+                    Button(
+                        onClick = {
+                            viewModel.createOrder(
+                                Order(
+                                    id = "",
+                                    clientId = "",
+                                    companyId = companyId,
+                                    number = Random.nextInt(1000000),
+                                    format = printFormat.name,
+                                    paperCount = countList,
+                                    files = "",
+                                    totalPrice = totalPrice,
+                                    comment = comment,
+                                    status = "Создан",
+                                    rejectReason = "",
+                                ),
+                            )
+                        },
+                        enabled = isEnable,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AppTheme.colors.orange10,
+                            contentColor = AppTheme.colors.black9,
+                            disabledContainerColor = AppTheme.colors.gray1,
+                            disabledContentColor = AppTheme.colors.gray7
                         ),
-                        onSuccess = onSuccess
-                    )
-                },
-                enabled = isEnable,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = AppTheme.colors.orange10,
-                    contentColor = AppTheme.colors.black9,
-                    disabledContainerColor = AppTheme.colors.gray1,
-                    disabledContentColor = AppTheme.colors.gray7
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    text = stringResource(R.string.create_order_button_text),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            text = stringResource(R.string.create_order_button_text),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+                is AddOrderParametersState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        CircularProgressIndicator(
+                            color = AppTheme.colors.orange10,
+                        )
+                    }
+                }
+                else -> {}
             }
         }
     }

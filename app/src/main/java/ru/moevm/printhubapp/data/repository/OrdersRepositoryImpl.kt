@@ -96,7 +96,9 @@ class OrdersRepositoryImpl(
     }
 
     override fun createOrder(newOrder: Order, callback: (RequestResult<Unit>) -> Unit) {
-        val updatedOrder = newOrder.copy(clientId = userUid)
+        val updatedOrder = newOrder.copy(
+            clientId = userUid,
+        )
         Log.w("createOrder", "Client id ${userUid}")
         val orderDto = updatedOrder.toDto()
         val documentRef = orders.document()

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import ru.moevm.printhubapp.domain.entity.User
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,6 +18,8 @@ class AddOrderViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow<AddOrderState>(AddOrderState.Init)
     val state: StateFlow<AddOrderState> get() = _state.asStateFlow()
+
+    private var allPrinthubs: List<User> = emptyList()
 
     init {
         getPrinthubs()
@@ -28,6 +31,7 @@ class AddOrderViewModel @Inject constructor(
 
             try {
                 val printhubs = getPrinthubsUseCase()
+                allPrinthubs = printhubs
                 _state.value = AddOrderState.Success(printhubs)
             } catch (e: Exception) {
                 _state.value = AddOrderState.Error
@@ -40,8 +44,8 @@ class AddOrderViewModel @Inject constructor(
             _state.value = AddOrderState.Loading
 
             try {
-                val printhubs = getPrinthubsUseCase().filter { it.address.contains(query, ignoreCase = true) }
-                _state.value = AddOrderState.Success(printhubs)
+                val filteredPrinthubs = allPrinthubs.filter { it.address.contains(query, ignoreCase = true) }
+                _state.value = AddOrderState.Success(filteredPrinthubs)
             } catch (e: Exception) {
                 _state.value = AddOrderState.Error
             }
