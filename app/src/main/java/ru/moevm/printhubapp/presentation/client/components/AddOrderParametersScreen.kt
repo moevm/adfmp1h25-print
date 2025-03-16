@@ -187,7 +187,7 @@ fun AddOrderParametersScreen(
                             id = "",
                             clientId = "",
                             companyId = companyId,
-                            number = Random.nextInt(100000),
+                            number = Random.nextInt(1000000),
                             format = printFormat.name,
                             paperCount = countList,
                             files = "",

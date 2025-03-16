@@ -42,6 +42,7 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.presentation.client.state.OrderDetailsState
 import ru.moevm.printhubapp.presentation.client.viewmodels.OrderDetailsViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
+import ru.moevm.printhubapp.utils.getDisplayStatus
 import ru.moevm.printhubapp.utils.getStatusColor
 
 @Composable
@@ -130,7 +131,7 @@ fun OrderDetailsScreen(
                                     RoundedCornerShape(10.dp)
                                 )
                                 .padding(vertical = 4.dp, horizontal = 8.dp),
-                            text = order.status,
+                            text = getDisplayStatus(order.status),
                             fontSize = 16.sp,
                             color = Color.White
                         )

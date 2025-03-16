@@ -8,7 +8,7 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 fun getStatusColor(status: String): Color {
     return when (status) {
         "В работе" -> AppTheme.colors.yellow
-        "Готов к получению" -> AppTheme.colors.green8
+        "Ожидает получения" -> AppTheme.colors.green8
         "Отказ" -> AppTheme.colors.red
         "Выполнен" -> AppTheme.colors.green9
         else -> AppTheme.colors.gray7

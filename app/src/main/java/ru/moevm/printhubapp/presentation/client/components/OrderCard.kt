@@ -21,6 +21,7 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.domain.entity.Order
 import ru.moevm.printhubapp.presentation.client.utils.formatToString
 import ru.moevm.printhubapp.ui.theme.AppTheme
+import ru.moevm.printhubapp.utils.getDisplayStatus
 import ru.moevm.printhubapp.utils.getStatusColor
 
 @Composable
@@ -43,7 +44,7 @@ fun OrderCard(
                 modifier = Modifier
                     .background(getStatusColor(order.status), RoundedCornerShape(10.dp))
                     .padding(vertical = 4.dp, horizontal = 8.dp),
-                text = order.status,
+                text = getDisplayStatus(order.status),
                 fontSize = 16.sp,
                 color = Color.White
             )
