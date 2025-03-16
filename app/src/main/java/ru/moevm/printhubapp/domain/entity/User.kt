@@ -7,5 +7,5 @@ data class User(
     val role: Role,
     val nameCompany: String = "",
     val address: String = "",
-    val statisticId: String
+    val statisticId: String = ""
 )

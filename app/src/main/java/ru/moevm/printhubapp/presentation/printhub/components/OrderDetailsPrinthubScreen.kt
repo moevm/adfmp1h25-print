@@ -47,6 +47,7 @@ import ru.moevm.printhubapp.presentation.client.state.OrderDetailsState
 import ru.moevm.printhubapp.presentation.printhub.viewmodels.OrderDetailsViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 import ru.moevm.printhubapp.utils.getStatusColor
+import com.google.firebase.Timestamp
 
 @Composable
 fun OrderDetailsPrinthubScreen(
@@ -207,7 +208,16 @@ fun OrderDetailsPrinthubScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Button(
-                        onClick = { status = OrderPrinthubStatus.INWORK },
+                        onClick = {
+                            status = OrderPrinthubStatus.INWORK
+                            val updatedOrder = (state as? OrderDetailsState.Success)?.order?.copy(
+                                status = "В работе",
+                                updatedAt = Timestamp.now()
+                            )
+                            if (updatedOrder != null) {
+                                viewModel.updateOrder(updatedOrder)
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = AppTheme.colors.orange10,
@@ -243,7 +253,16 @@ fun OrderDetailsPrinthubScreen(
             }
             if(status == OrderPrinthubStatus.INWORK) {
                 Button(
-                    onClick = { status = OrderPrinthubStatus.AWAIT },
+                    onClick = {
+                        status = OrderPrinthubStatus.AWAIT
+                        val updatedOrder = (state as? OrderDetailsState.Success)?.order?.copy(
+                            status = "Ожидает получения",
+                            updatedAt = Timestamp.now()
+                        )
+                        if (updatedOrder != null) {
+                            viewModel.updateOrder(updatedOrder)
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = AppTheme.colors.orange10,
@@ -261,7 +280,16 @@ fun OrderDetailsPrinthubScreen(
             }
             if(status == OrderPrinthubStatus.AWAIT) {
                 Button(
-                    onClick = { status = OrderPrinthubStatus.READE },
+                    onClick = {
+                        status = OrderPrinthubStatus.READE
+                        val updatedOrder = (state as? OrderDetailsState.Success)?.order?.copy(
+                            status = "Выполнен",
+                            updatedAt = Timestamp.now()
+                        )
+                        if (updatedOrder != null) {
+                            viewModel.updateOrder(updatedOrder)
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = AppTheme.colors.orange10,
@@ -284,8 +312,16 @@ fun OrderDetailsPrinthubScreen(
             onDismiss = {
                 isVisibleRejectDialog = false
             },
-            onChangeStatus = {
+            onChangeStatus = { comment ->
                 status = OrderPrinthubStatus.REJECT
+                val updatedOrder = (state as? OrderDetailsState.Success)?.order?.copy(
+                    status = "Отказ",
+                    rejectReason = comment,
+                    updatedAt = Timestamp.now()
+                )
+                if (updatedOrder != null) {
+                    viewModel.updateOrder(updatedOrder)
+                }
             }
         )
     }
@@ -336,8 +372,7 @@ private fun DetailsRow(
 private fun Comment(
     titleId: Int,
     comment: String,
-
-    ) {
+) {
     Column {
         Text(
             modifier = Modifier.padding(bottom = 4.dp),

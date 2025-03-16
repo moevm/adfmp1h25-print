@@ -7,4 +7,5 @@ sealed class OrderDetailsState {
     object Loading : OrderDetailsState()
     data class Success(val order: Order) : OrderDetailsState()
     object Error: OrderDetailsState()
+    object ServerError: OrderDetailsState()
 }
