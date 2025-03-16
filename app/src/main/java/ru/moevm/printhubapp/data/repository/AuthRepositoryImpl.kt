@@ -28,6 +28,7 @@ class AuthRepositoryImpl(
 ) : AuthRepository {
 
     private val users = db.collection("users")
+    private val statistics = db.collection("statistics")
 
     override fun authorization(user: Auth, callback: (RequestResult<Unit>) -> Unit) {
         auth.signInWithEmailAndPassword(user.mail, user.password)
@@ -73,13 +74,28 @@ class AuthRepositoryImpl(
                         putString(USER_ROLE, newUser.role.toString().lowercase())
                     }
 
+                    val statisticId = if (newUser.role.toString().lowercase() == "printhub") {
+                        val statistic = mapOf(
+                            "companyId" to currentUserId,
+                            "formatsCount" to mapOf<String, Int>(),
+                            "profit" to 0,
+                            "totalPaperCount" to 0
+                        )
+                        val documentRef = statistics.document()
+                        documentRef.set(statistic)
+                        documentRef.id
+                    } else {
+                        ""
+                    }
+
                     val user = mapOf(
                         "id" to currentUserId,
                         "password" to newUser.password,
                         "mail" to newUser.mail,
                         "role" to newUser.role.toString().lowercase(),
                         "address" to newUser.address,
-                        "nameCompany" to newUser.nameCompany
+                        "nameCompany" to newUser.nameCompany,
+                        "statisicId" to statisticId
                     )
 
                     users.document(currentUserId).set(user)

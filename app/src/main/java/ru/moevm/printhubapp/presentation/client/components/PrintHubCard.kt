@@ -57,7 +57,8 @@ private fun PrintHubCardPreview() {
         id = "",
         mail = "",
         password = "",
-        role = Role.PRINTHUB
+        role = Role.PRINTHUB,
+        statisticId = ""
     )
     PrintHubCard(
         printhub = printhub,

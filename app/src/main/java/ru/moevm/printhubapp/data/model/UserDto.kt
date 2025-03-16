@@ -6,5 +6,6 @@ data class UserDto(
     val password: String = "",
     val role: String = "",
     val nameCompany: String = "",
-    val address: String = ""
+    val address: String = "",
+    val statistic_id: String = ""
 )
