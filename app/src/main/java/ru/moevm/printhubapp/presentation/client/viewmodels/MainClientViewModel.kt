@@ -22,11 +22,13 @@ class MainClientViewModel @Inject constructor(
 
     private var initialLoadComplete = false
 
-    private var allOrders: List<Order> = emptyList()
+    private var originalOrders: List<Order> = emptyList()
     private var currentStatusFilters: Set<String> = emptySet()
     private var currentMinPrice: Int? = null
     private var currentMaxPrice: Int? = null
     private var currentFormatFilters: Set<String> = emptySet()
+    private var currentSearchQuery: String = ""
+    private var currentSortOption = SortOption.UPDATED_NEWEST_FIRST
 
     init {
         getClientOrders()
@@ -39,7 +41,9 @@ class MainClientViewModel @Inject constructor(
         UPDATED_OLDEST_FIRST
     }
 
-    private var currentSortOption = SortOption.UPDATED_NEWEST_FIRST
+    fun getCurrentSortOption(): SortOption {
+        return currentSortOption
+    }
 
     fun sortOrders(sortOption: SortOption) {
         viewModelScope.launch {
@@ -53,13 +57,13 @@ class MainClientViewModel @Inject constructor(
             _state.value = MainClientState.Loading
             try {
                 val orders = getClientOrdersUseCase()
-                allOrders = orders.sortedByDescending { it.updatedAt }
+                originalOrders = orders
 
                 if (!initialLoadComplete) {
-                    _state.value = MainClientState.Success(allOrders)
+                    applyAllFilters()
                     initialLoadComplete = true
                 } else {
-                    Log.d("FilterDebug", "Returning to screen - preserving filters")
+                    applyAllFilters()
                 }
             } catch (e: Exception) {
                 Log.e("OrderViewModel", "Error getting orders: ${e.message}", e)
@@ -71,16 +75,8 @@ class MainClientViewModel @Inject constructor(
     fun searchOrders(query: String) {
         viewModelScope.launch {
             try {
-                if (query.isEmpty()) {
-                    _state.value = MainClientState.Success(allOrders)
-                    return@launch
-                }
-
-                val filteredOrders = allOrders.filter { order ->
-                    order.number.toString().contains(query)
-                }
-
-                _state.value = MainClientState.Success(filteredOrders)
+                currentSearchQuery = query
+                applyAllFilters()
             } catch (e: Exception) {
                 Log.e("OrderViewModel", "Error searching orders: ${e.message}", e)
                 _state.value = MainClientState.Error
@@ -92,11 +88,6 @@ class MainClientViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 currentStatusFilters = statuses
-
-                if (currentStatusFilters.isEmpty()) {
-                    _state.value = MainClientState.Success(allOrders)
-                    return@launch
-                }
                 applyAllFilters()
             } catch (e: Exception) {
                 Log.e("OrderViewModel", "Error filtering orders: ${e.message}", e)
@@ -130,13 +121,10 @@ class MainClientViewModel @Inject constructor(
         }
     }
 
-    fun getCurrentSortOption(): SortOption {
-        return currentSortOption
-    }
-
     private fun applyAllFilters() {
         viewModelScope.launch {
-            var filteredOrders = allOrders
+            var filteredOrders = originalOrders
+
             if (currentStatusFilters.isNotEmpty()) {
                 filteredOrders = filteredOrders.filter { order ->
                     currentStatusFilters.contains(order.status)
@@ -157,14 +145,20 @@ class MainClientViewModel @Inject constructor(
                 }
             }
 
+            if (currentSearchQuery.isNotEmpty()) {
+                filteredOrders = filteredOrders.filter { order ->
+                    order.number.toString().contains(currentSearchQuery)
+                }
+            }
+
             filteredOrders = when (currentSortOption) {
                 SortOption.CREATED_NEWEST_FIRST -> filteredOrders.sortedByDescending { it.createdAt }
                 SortOption.CREATED_OLDEST_FIRST -> filteredOrders.sortedBy { it.createdAt }
                 SortOption.UPDATED_NEWEST_FIRST -> filteredOrders.sortedByDescending { it.updatedAt }
                 SortOption.UPDATED_OLDEST_FIRST -> filteredOrders.sortedBy { it.updatedAt }
             }
-            allOrders = filteredOrders
-            _state.value = MainClientState.Success(allOrders)
+
+            _state.value = MainClientState.Success(filteredOrders)
         }
     }
 }
