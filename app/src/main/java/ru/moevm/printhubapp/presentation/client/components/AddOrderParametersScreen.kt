@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.client.components
+package com.example.printhubapp.presentation.client.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -45,23 +45,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.moevm.printhubapp.R
-import ru.moevm.printhubapp.domain.entity.Order
-import ru.moevm.printhubapp.presentation.client.state.AddOrderParametersState
-import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
-import ru.moevm.printhubapp.ui.theme.AppTheme
-import ru.moevm.printhubapp.utils.LIMIT_CHAR
+import com.example.printhubapp.R
+import com.example.printhubapp.domain.entity.Order
+import com.example.printhubapp.presentation.client.state.AddOrderParametersState
+import com.example.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
+import com.example.printhubapp.ui.theme.AppTheme
+import com.example.printhubapp.utils.LIMIT_CHAR
 import kotlin.random.Random
 
 @Composable
 fun AddOrderParametersScreen(
     onBack: () -> Unit,
     onAbout: () -> Unit,
-    onSuccess: () -> Unit,
-    viewModel: AddOrderParametersViewModel,
-    companyId: String
+    onNext: (format: String, paperCount: Int, comment: String, totalPrice: Int) -> Unit,
+    viewModel: AddOrderParametersViewModel
 ) {
-    val state = viewModel.state.collectAsState(AddOrderParametersState.Init).value
+    val state by viewModel.state.collectAsState()
 
     var totalPrice by remember { mutableStateOf(0) }
     var showPriceList by remember { mutableStateOf(false) }
@@ -69,12 +68,6 @@ fun AddOrderParametersScreen(
     var printFormat by remember { mutableStateOf(PrintFormatItem.A1) }
     var countList by remember { mutableStateOf(1) }
     var comment by remember { mutableStateOf("") }
-
-    LaunchedEffect(state) {
-        if(state is AddOrderParametersState.Success) {
-            onSuccess()
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -179,20 +172,11 @@ fun AddOrderParametersScreen(
                     val isEnable = (selectedDropMenu != R.string.select_format_print)
                     Button(
                         onClick = {
-                            viewModel.createOrder(
-                                Order(
-                                    id = "",
-                                    clientId = "",
-                                    companyId = companyId,
-                                    number = Random.nextInt(1000000),
-                                    format = printFormat.name,
-                                    paperCount = countList,
-                                    files = "",
-                                    totalPrice = totalPrice,
-                                    comment = comment,
-                                    status = "Создан",
-                                    rejectReason = "",
-                                ),
+                            onNext(
+                                printFormat.name,
+                                countList,
+                                comment,
+                                totalPrice
                             )
                         },
                         enabled = isEnable,
@@ -429,7 +413,9 @@ private fun ChooseFile() {
 private fun Comment(comment: String, onCommentChange: (String) -> Unit) {
     Column {
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth().height(185.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(185.dp),
             value = comment,
             onValueChange = {
                 onCommentChange(if (it.length < LIMIT_CHAR) it else it.take(LIMIT_CHAR))
@@ -476,8 +462,7 @@ private fun AddOrderParametersScreenPreview() {
     AddOrderParametersScreen(
         onBack = {},
         onAbout = {},
-        viewModel = viewModel(),
-        companyId = "dummyCompanyId",
-        onSuccess = {}
+        onNext = { _, _, _, _ -> },
+        viewModel = viewModel()
     )
 }

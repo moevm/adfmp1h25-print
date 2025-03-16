@@ -59,7 +59,7 @@
     <string name="add_file">Прикрепить файл</string>
     <string name="total_price">Итого: %s ₽</string>
     <string name="placeholder_comment">Комментарий</string>
-    <string name="create_order_button_text">Оформить заказ</string>
+    <string name="create_order_button_text">Далее</string>
     <!--    END     -->
 
     <!--    Price List Dialog    -->

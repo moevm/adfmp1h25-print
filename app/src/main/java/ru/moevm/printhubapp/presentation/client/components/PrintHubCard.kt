@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.client.components
+package com.example.printhubapp.presentation.client.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,19 +14,44 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.moevm.printhubapp.R
-import ru.moevm.printhubapp.domain.entity.Role
-import ru.moevm.printhubapp.domain.entity.User
-import ru.moevm.printhubapp.ui.theme.AppTheme
+import com.example.printhubapp.R
+import com.example.printhubapp.domain.entity.Order
+import com.example.printhubapp.domain.entity.Role
+import com.example.printhubapp.domain.entity.User
+import com.example.printhubapp.presentation.client.viewmodels.AddOrderViewModel
+import com.example.printhubapp.ui.theme.AppTheme
+import kotlin.random.Random
 
 @Composable
 fun PrintHubCard(
     printhub: User,
-    onNavigateTo: (String) -> Unit
+    format: String,
+    paperCount: Int,
+    comment: String,
+    totalPrice: Int,
+    onSuccess: () -> Unit,
+    viewModel: AddOrderViewModel
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { onNavigateTo(printhub.id) },
+        onClick = {
+            viewModel.createOrder(
+                Order(
+                    id = "",
+                    clientId = "",
+                    companyId = printhub.id,
+                    number = Random.nextInt(1000000),
+                    format = format,
+                    paperCount = paperCount,
+                    files = "",
+                    totalPrice = totalPrice,
+                    comment = comment,
+                    status = "Создан",
+                    rejectReason = "",
+                ),
+                onSuccess
+            )
+        },
         colors = CardDefaults.cardColors(
             containerColor = AppTheme.colors.orange3 ,
             contentColor = AppTheme.colors.black9,
@@ -60,8 +85,16 @@ private fun PrintHubCardPreview() {
         role = Role.PRINTHUB,
         statisticId = ""
     )
+
+    val previewViewModel = androidx.lifecycle.viewmodel.compose.viewModel<AddOrderViewModel>()
+
     PrintHubCard(
         printhub = printhub,
-        onNavigateTo = {}
+        format = "A4",
+        paperCount = 1,
+        comment = "Test comment",
+        totalPrice = 100,
+        onSuccess = {},
+        viewModel = previewViewModel
     )
 }

@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.client.components
+package com.example.printhubapp.presentation.client.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,10 +38,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import ru.moevm.printhubapp.R
-import ru.moevm.printhubapp.presentation.client.state.AddOrderState
-import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderViewModel
-import ru.moevm.printhubapp.ui.theme.AppTheme
+import com.example.printhubapp.R
+import com.example.printhubapp.presentation.client.state.AddOrderState
+import com.example.printhubapp.presentation.client.viewmodels.AddOrderViewModel
+import com.example.printhubapp.ui.theme.AppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -51,7 +51,11 @@ import kotlinx.coroutines.time.debounce
 fun AddOrderScreen(
     onAbout: () -> Unit,
     onBack: () -> Unit,
-    onNavigateTo: (String) -> Unit
+    onSuccess: () -> Unit,
+    format: String,
+    paperCount: Int,
+    comment: String,
+    totalPrice: Int
 ) {
     var search by remember { mutableStateOf("") }
     val searchQuery = remember { MutableStateFlow("") }
@@ -175,7 +179,12 @@ fun AddOrderScreen(
                             items(printhubs.size) { index ->
                                 PrintHubCard(
                                     printhub = printhubs[index],
-                                    onNavigateTo = onNavigateTo
+                                    format = format,
+                                    paperCount = paperCount,
+                                    comment = comment,
+                                    totalPrice = totalPrice,
+                                    onSuccess = onSuccess,
+                                    viewModel = viewModel
                                 )
                             }
                         }
@@ -201,5 +210,13 @@ fun AddOrderScreen(
 @Preview(showBackground = true)
 @Composable
 private fun AddOrderScreenPreview() {
-    AddOrderScreen({}, {}, {})
+    AddOrderScreen(
+        onAbout = {},
+        onBack = {},
+        onSuccess = {},
+        format = "A4",
+        paperCount = 1,
+        comment = "",
+        totalPrice = 100
+    )
 }

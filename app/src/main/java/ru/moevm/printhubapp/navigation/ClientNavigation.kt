@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.navigation
+package com.example.printhubapp.navigation
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -6,13 +6,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import ru.moevm.printhubapp.presentation.client.components.AddOrderParametersScreen
-import ru.moevm.printhubapp.presentation.client.components.AddOrderScreen
-import ru.moevm.printhubapp.presentation.client.components.ClientProfileScreen
-import ru.moevm.printhubapp.presentation.client.components.MainClientScreen
-import ru.moevm.printhubapp.presentation.client.components.OrderDetailsScreen
-import ru.moevm.printhubapp.presentation.client.components.SuccessOrderScreen
-import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
+import com.example.printhubapp.presentation.client.components.AddOrderParametersScreen
+import com.example.printhubapp.presentation.client.components.AddOrderScreen
+import com.example.printhubapp.presentation.client.components.ClientProfileScreen
+import com.example.printhubapp.presentation.client.components.MainClientScreen
+import com.example.printhubapp.presentation.client.components.OrderDetailsScreen
+import com.example.printhubapp.presentation.client.components.SuccessOrderScreen
+import com.example.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
 
 fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
     composable(route = Screen.MainClientScreen.route) {
@@ -22,7 +22,7 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
                 navHostController.navigate(Screen.AboutScreen.route)
             },
             addOrder = {
-                navHostController.navigate(Screen.AddOrderScreen.route)
+                navHostController.navigate(Screen.AddOrderParametersScreen.route)
             },
             showOrderDetails = { orderId ->
                 navHostController.navigate("${Screen.OrderDetailsScreen.route}/$orderId")
@@ -30,29 +30,40 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
         )
     }
 
-    composable(
-        route = Screen.AddOrderScreen.route
-    ) {
-        AddOrderScreen(
+
+    composable(route = Screen.AddOrderParametersScreen.route) {
+        val viewModel: AddOrderParametersViewModel = hiltViewModel()
+        AddOrderParametersScreen(
             onAbout = {
                 navHostController.navigate(Screen.AboutScreen.route)
             },
             onBack = {
                 navHostController.popBackStack()
             },
-            onNavigateTo = { companyId: String ->
-                navHostController.navigate("${Screen.AddOrderParametersScreen.route}/$companyId")
-            }
+            onNext = { format, paperCount, comment, totalPrice ->
+                navHostController.navigate(
+                    "${Screen.AddOrderScreen.route}/$format/$paperCount/$comment/$totalPrice"
+                )
+            },
+            viewModel = viewModel
         )
     }
 
     composable(
-        route = "${Screen.AddOrderParametersScreen.route}/{companyId}",
-        arguments = listOf(navArgument("companyId") { type = NavType.StringType })
+        route = "${Screen.AddOrderScreen.route}/{format}/{paperCount}/{comment}/{totalPrice}",
+        arguments = listOf(
+            navArgument("format") { type = NavType.StringType },
+            navArgument("paperCount") { type = NavType.IntType },
+            navArgument("comment") { type = NavType.StringType },
+            navArgument("totalPrice") { type = NavType.IntType }
+        )
     ) { backStackEntry ->
-        val companyId = backStackEntry.arguments?.getString("companyId") ?: "1"
-        val viewModel: AddOrderParametersViewModel = hiltViewModel()
-        AddOrderParametersScreen(
+        val format = backStackEntry.arguments?.getString("format") ?: "A4"
+        val paperCount = backStackEntry.arguments?.getInt("paperCount") ?: 1
+        val comment = backStackEntry.arguments?.getString("comment") ?: ""
+        val totalPrice = backStackEntry.arguments?.getInt("totalPrice") ?: 0
+
+        AddOrderScreen(
             onAbout = {
                 navHostController.navigate(Screen.AboutScreen.route)
             },
@@ -62,8 +73,10 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
             onSuccess = {
                 navHostController.navigate(Screen.SuccessScreen.route)
             },
-            viewModel = viewModel,
-            companyId = companyId
+            format = format,
+            paperCount = paperCount,
+            comment = comment,
+            totalPrice = totalPrice
         )
     }
 
