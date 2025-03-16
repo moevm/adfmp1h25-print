@@ -10,7 +10,7 @@
     <!--    END     -->
 
     <!--    Registration    -->
-    <string name="placeholder_nameCompany">Название компании пользователя</string>
+    <string name="placeholder_nameCompany">Название компании</string>
     <string name="placeholder_address">Адрес</string>
     <string name="select_role">Выберите роль</string>
     <string name="client_role">Клиент</string>
@@ -31,7 +31,7 @@
     <string name="print_hub_name">Печатный центра: %s</string>
     <string name="address_print_hub">Адрес: %s</string>
     <string name="date_of_create">Дата создания: %s</string>
-    <string name="date_of_last_change">Дата последнего обновления: %s</string>
+    <string name="date_of_last_change">Дата обновления: %s</string>
     <!--    END     -->
 
     <!--    Main Client Screen  -->
@@ -123,7 +123,7 @@
 
     <!--    Statistic Screen   -->
     <string name="statistic_screen_title">Статистика</string>
-    <string name="list_title">Расход бумаги:</string>
+    <string name="list_title">Расход бумаги: %s мл</string>
     <string name="toner_title">Расход тонера: %s мл</string>
     <string name="profit_title">Доход: %s ₽</string>
     <string name="price_printer_title">Цена принтера: 5000 ₽</string>

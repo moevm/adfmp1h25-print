@@ -75,8 +75,13 @@ class OrdersRepositoryImpl(
     override fun createOrder(newOrder: Order, callback: (RequestResult<Unit>) -> Unit) {
         val updatedOrder = newOrder.copy(clientId = userUid)
         val orderDto = updatedOrder.toDto()
-        orders.add(orderDto).addOnSuccessListener {
-            callback(RequestResult.Success(Unit))
+        val documentRef = orders.document()
+        documentRef.set(orderDto).addOnSuccessListener {
+            documentRef.update("id", documentRef.id).addOnSuccessListener {
+                callback(RequestResult.Success(Unit))
+            }.addOnFailureListener { e ->
+                callback(RequestResult.Error(RequestError.Server("Ошибка обновления ID: ${e.message}")))
+            }
         }.addOnFailureListener { e ->
             callback(RequestResult.Error(RequestError.Server("Ошибка сохранения данных: ${e.message}")))
         }

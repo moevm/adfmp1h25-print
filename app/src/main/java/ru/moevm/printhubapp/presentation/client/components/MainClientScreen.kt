@@ -50,10 +50,8 @@ fun MainClientScreen(
     addOrder: () -> Unit,
     showOrderDetails: (Any?) -> Unit
 ) {
-
     val viewModel: MainClientViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
-
     Scaffold(
         topBar = {
             Column(
@@ -144,7 +142,7 @@ fun MainClientScreen(
                         Text(
                             text = "У вас пока нет заказов",
                             fontSize = 18.sp,
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
                             color = AppTheme.colors.gray7
                         )
                     } else {
@@ -159,9 +157,10 @@ fun MainClientScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(orders.size) { index ->
+                                val order = orders.reversed()[index]
                                 OrderCard(
-                                    order = orders[index],
-                                    showOrderDetails = { showOrderDetails(orders[index].id) }
+                                    order = order,
+                                    showOrderDetails = { showOrderDetails(order.id) }
                                 )
                             }
                         }

@@ -51,6 +51,8 @@ import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderParametersVie
 import ru.moevm.printhubapp.ui.theme.AppTheme
 import ru.moevm.printhubapp.utils.LIMIT_CHAR
 import com.google.firebase.Timestamp
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import kotlin.random.Random
 
 @Composable
@@ -62,7 +64,8 @@ fun AddOrderParametersScreen(
     companyId: String
 ) {
     val state = viewModel.state.collectAsState(AddOrderParametersState.Init).value
-    val context = LocalContext.current
+    val userZoneId = ZoneId.systemDefault()
+    val currentTime = ZonedDateTime.now(userZoneId).toInstant()
 
     var totalPrice by remember { mutableStateOf(0) }
     var showPriceList by remember { mutableStateOf(false) }
@@ -192,8 +195,8 @@ fun AddOrderParametersScreen(
                             comment = comment,
                             status = "Создан",
                             rejectReason = "",
-                            createdAt = Timestamp.now(),
-                            updatedAt = Timestamp.now()
+                            createdAt = Timestamp(currentTime.epochSecond, currentTime.nano),
+                            updatedAt = Timestamp(currentTime.epochSecond, currentTime.nano)
                         ),
                         onSuccess = onSuccess
                     )
