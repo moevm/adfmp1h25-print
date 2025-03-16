@@ -3,9 +3,11 @@ package ru.moevm.printhubapp.presentation.printhub.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,7 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,9 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.moevm.printhubapp.R
-import ru.moevm.printhubapp.presentation.printhub.state.MainPrinthubState
 import ru.moevm.printhubapp.presentation.printhub.state.StatisticState
-import ru.moevm.printhubapp.presentation.printhub.viewmodels.MainPrinthubViewModel
 import ru.moevm.printhubapp.presentation.printhub.viewmodels.StatisticViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
@@ -45,10 +44,6 @@ fun StatisticScreen(
 
     val viewModel: StatisticViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.getStatistic()
-    }
 
     Scaffold(
         topBar = {
@@ -130,10 +125,14 @@ fun StatisticScreen(
                     )
                 }
                 is StatisticState.Loading -> {
-                    CircularProgressIndicator(
-                        color = AppTheme.colors.orange10,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        CircularProgressIndicator(
+                            color = AppTheme.colors.orange10,
+                        )
+                    }
                 }
                 else -> {}
             }

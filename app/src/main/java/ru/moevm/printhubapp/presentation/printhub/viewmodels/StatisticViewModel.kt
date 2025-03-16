@@ -18,6 +18,10 @@ class StatisticViewModel @Inject constructor(
     private val _state = MutableStateFlow<StatisticState>(StatisticState.Init)
     val state: StateFlow<StatisticState> get() = _state.asStateFlow()
 
+    init {
+        getStatistic()
+    }
+
     fun getStatistic() {
         viewModelScope.launch {
             _state.value = StatisticState.Loading

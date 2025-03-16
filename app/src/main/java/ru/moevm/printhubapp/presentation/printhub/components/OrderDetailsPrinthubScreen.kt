@@ -1,6 +1,5 @@
 package ru.moevm.printhubapp.presentation.printhub.components
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,12 +41,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.firebase.Timestamp
 import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.presentation.client.state.OrderDetailsState
 import ru.moevm.printhubapp.presentation.printhub.viewmodels.OrderDetailsViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 import ru.moevm.printhubapp.utils.getStatusColor
-import com.google.firebase.Timestamp
 
 @Composable
 fun OrderDetailsPrinthubScreen(
