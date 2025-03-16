@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,10 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.presentation.client.state.AddOrderState
 import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.time.debounce
 
 @Composable
 fun AddOrderScreen(
@@ -49,9 +54,18 @@ fun AddOrderScreen(
     onNavigateTo: (String) -> Unit
 ) {
     var search by remember { mutableStateOf("") }
+    val searchQuery = remember { MutableStateFlow("") }
 
     val viewModel: AddOrderViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(searchQuery) {
+        searchQuery
+            .debounce(500)
+            .collectLatest { query ->
+                viewModel.searchPrinthubs(query)
+            }
+    }
 
     Scaffold(
         topBar = {
@@ -104,49 +118,50 @@ fun AddOrderScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+                text = stringResource(R.string.choose_printhub),
+                fontSize = 16.sp,
+                color = AppTheme.colors.gray7
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                value = search,
+                onValueChange = {
+                    search = it
+                    searchQuery.value = it
+                },
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.placeholder_choose_address),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = AppTheme.colors.gray7
+                    )
+                },
+                singleLine = true,
+                textStyle = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = AppTheme.colors.black9
+                ),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = AppTheme.colors.gray1,
+                    focusedContainerColor = AppTheme.colors.gray1,
+                    disabledContainerColor = AppTheme.colors.gray1,
+                    disabledBorderColor = AppTheme.colors.gray7,
+                    unfocusedBorderColor = AppTheme.colors.gray7,
+                    focusedBorderColor = AppTheme.colors.gray7
+                )
+            )
             when (state) {
                 is AddOrderState.Success -> {
                     val printhubs = (state as AddOrderState.Success).printhubs
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
-                        text = stringResource(R.string.choose_printhub),
-                        fontSize = 16.sp,
-                        color = AppTheme.colors.gray7
-                    )
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        value = search,
-                        onValueChange = {
-                            search = it
-                        },
-                        placeholder = {
-                            Text(
-                                text = stringResource(R.string.placeholder_choose_address),
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Normal,
-                                color = AppTheme.colors.gray7
-                            )
-                        },
-                        singleLine = true,
-                        textStyle = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = AppTheme.colors.black9
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = AppTheme.colors.gray1,
-                            focusedContainerColor = AppTheme.colors.gray1,
-                            disabledContainerColor = AppTheme.colors.gray1,
-                            disabledBorderColor = AppTheme.colors.gray7,
-                            unfocusedBorderColor = AppTheme.colors.gray7,
-                            focusedBorderColor = AppTheme.colors.gray7
-                        )
-                    )
                     Box {
                         LazyColumn(
                             contentPadding = PaddingValues(

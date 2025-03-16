@@ -34,4 +34,17 @@ class AddOrderViewModel @Inject constructor(
             }
         }
     }
+
+    fun searchPrinthubs(query: String) {
+        viewModelScope.launch {
+            _state.value = AddOrderState.Loading
+
+            try {
+                val printhubs = getPrinthubsUseCase().filter { it.address.contains(query, ignoreCase = true) }
+                _state.value = AddOrderState.Success(printhubs)
+            } catch (e: Exception) {
+                _state.value = AddOrderState.Error
+            }
+        }
+    }
 }
