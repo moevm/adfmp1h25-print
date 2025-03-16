@@ -1,4 +1,4 @@
-package com.example.printhubapp.navigation
+package ru.moevm.printhubapp.navigation
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -6,13 +6,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.printhubapp.presentation.client.components.AddOrderParametersScreen
-import com.example.printhubapp.presentation.client.components.AddOrderScreen
-import com.example.printhubapp.presentation.client.components.ClientProfileScreen
-import com.example.printhubapp.presentation.client.components.MainClientScreen
-import com.example.printhubapp.presentation.client.components.OrderDetailsScreen
-import com.example.printhubapp.presentation.client.components.SuccessOrderScreen
-import com.example.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
+import ru.moevm.printhubapp.presentation.client.components.AddOrderParametersScreen
+import ru.moevm.printhubapp.presentation.client.components.AddOrderScreen
+import ru.moevm.printhubapp.presentation.client.components.ClientProfileScreen
+import ru.moevm.printhubapp.presentation.client.components.MainClientScreen
+import ru.moevm.printhubapp.presentation.client.components.OrderDetailsScreen
+import ru.moevm.printhubapp.presentation.client.components.SuccessOrderScreen
+import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
 
 fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
     composable(route = Screen.MainClientScreen.route) {

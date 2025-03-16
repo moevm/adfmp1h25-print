@@ -1,4 +1,4 @@
-package com.example.printhubapp.presentation.client.components
+package ru.moevm.printhubapp.presentation.client.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -45,12 +45,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.printhubapp.R
-import com.example.printhubapp.domain.entity.Order
-import com.example.printhubapp.presentation.client.state.AddOrderParametersState
-import com.example.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
-import com.example.printhubapp.ui.theme.AppTheme
-import com.example.printhubapp.utils.LIMIT_CHAR
+import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.domain.entity.Order
+import ru.moevm.printhubapp.presentation.client.state.AddOrderParametersState
+import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
+import ru.moevm.printhubapp.ui.theme.AppTheme
+import ru.moevm.printhubapp.utils.LIMIT_CHAR
 import kotlin.random.Random
 
 @Composable

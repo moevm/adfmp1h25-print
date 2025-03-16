@@ -1,4 +1,4 @@
-package com.example.printhubapp.presentation.client.components
+package ru.moevm.printhubapp.presentation.client.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,10 +38,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.printhubapp.R
-import com.example.printhubapp.presentation.client.state.AddOrderState
-import com.example.printhubapp.presentation.client.viewmodels.AddOrderViewModel
-import com.example.printhubapp.ui.theme.AppTheme
+import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.presentation.client.state.AddOrderState
+import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderViewModel
+import ru.moevm.printhubapp.ui.theme.AppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
