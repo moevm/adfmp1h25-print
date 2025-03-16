@@ -2,7 +2,11 @@ package ru.moevm.printhubapp.presentation.printhub.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ru.moevm.printhubapp.domain.entity.Order
+import ru.moevm.printhubapp.domain.entity.result.RequestError
+import ru.moevm.printhubapp.domain.entity.result.RequestResult
 import ru.moevm.printhubapp.domain.usecases.GetOrderUseCase
+import ru.moevm.printhubapp.domain.usecases.UpdateOrderUseCase
 import ru.moevm.printhubapp.presentation.client.state.OrderDetailsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrderDetailsViewModel @Inject constructor(
-    private val getOrderUseCase: GetOrderUseCase
+    private val getOrderUseCase: GetOrderUseCase,
+    private val updateOrderUseCase: UpdateOrderUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<OrderDetailsState>(OrderDetailsState.Init)
@@ -27,6 +32,25 @@ class OrderDetailsViewModel @Inject constructor(
                 _state.value = OrderDetailsState.Success(order)
             } catch (e: Exception) {
                 _state.value = OrderDetailsState.Error
+            }
+        }
+    }
+
+    fun updateOrder(order: Order) {
+        viewModelScope.launch {
+            _state.value = OrderDetailsState.Loading
+            updateOrderUseCase(order) { result ->
+                when (result) {
+                    is RequestResult.Success -> {
+                        _state.value = OrderDetailsState.Success(order)
+                    }
+                    is RequestResult.Error -> {
+                        when (result.error) {
+                            is RequestError.Server -> _state.value = OrderDetailsState.Error
+                            else -> _state.value = OrderDetailsState.ServerError
+                        }
+                    }
+                }
             }
         }
     }

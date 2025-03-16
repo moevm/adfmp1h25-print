@@ -38,4 +38,22 @@ class MainPrinthubViewModel @Inject constructor(
             }
         }
     }
+
+    fun searchOrders(query: String) {
+        viewModelScope.launch {
+            _state.value = MainPrinthubState.Loading
+
+            try {
+                val orders = getPrinthubOrdersUseCase().filter { order ->
+                    (order.format.startsWith("A", ignoreCase = true) && order.format.contains(query, ignoreCase = true)) ||
+                            order.number.toString().contains(query) ||
+                            order.paperCount.toString().contains(query) ||
+                            order.totalPrice.toString().contains(query)
+                }
+                _state.value = MainPrinthubState.Success(orders)
+            } catch (e: Exception) {
+                _state.value = MainPrinthubState.Error
+            }
+        }
+    }
 }

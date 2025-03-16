@@ -46,6 +46,9 @@ import ru.moevm.printhubapp.R
 import ru.moevm.printhubapp.presentation.printhub.state.MainPrinthubState
 import ru.moevm.printhubapp.presentation.printhub.viewmodels.MainPrinthubViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 
 @Composable
 fun MainPrinthubScreen(
@@ -54,12 +57,21 @@ fun MainPrinthubScreen(
     onOrderDetails: (Any?) -> Unit,
 ) {
     var search by remember { mutableStateOf("") }
+    val searchQuery = remember { MutableStateFlow("") }
 
     val viewModel: MainPrinthubViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getPrinthubOrders()
+    }
+
+    LaunchedEffect(searchQuery) {
+        searchQuery
+            .debounce(500)
+            .collectLatest { query ->
+                viewModel.searchOrders(query)
+            }
     }
 
     Scaffold(
@@ -151,6 +163,7 @@ fun MainPrinthubScreen(
                 value = search,
                 onValueChange = {
                     search = it
+                    searchQuery.value = it
                 },
                 placeholder = {
                     Text(
