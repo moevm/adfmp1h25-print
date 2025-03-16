@@ -156,8 +156,8 @@ fun MainClientScreen(
                             ),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            items(orders.size) { index ->
-                                val order = orders.reversed()[index]
+                            items(orders.sortedByDescending { it.updatedAt }.size) { index ->
+                                val order = orders.sortedByDescending { it.updatedAt }[index]
                                 OrderCard(
                                     order = order,
                                     showOrderDetails = { showOrderDetails(order.id) }
