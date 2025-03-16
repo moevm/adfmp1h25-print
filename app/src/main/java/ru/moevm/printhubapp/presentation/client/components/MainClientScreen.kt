@@ -216,15 +216,20 @@ fun MainClientScreen(
                     Log.d("orders", (state as MainClientState.Success).orders.toString())
                     val orders = (state as MainClientState.Success).orders
                     if (orders.isEmpty() && selectedStatuses.isEmpty() && !priceFilterApplied && selectedFormats.isEmpty()) {
-                        Text(
-                            text = "У вас пока нет заказов",
-                            fontSize = 18.sp,
+                        Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                                .align(Alignment.Center),
-                            color = AppTheme.colors.gray7
-                        )
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "У вас пока нет заказов",
+                                fontSize = 18.sp,
+                                color = AppTheme.colors.gray7,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     } else {
                         Column(
                             modifier = Modifier.padding(horizontal = 16.dp)
@@ -363,21 +368,38 @@ fun MainClientScreen(
                                     Spacer(modifier = Modifier.width(4.dp))
                                 }
                             }
-                            LazyColumn(
-                                modifier = Modifier.weight(1f),
-                                contentPadding = PaddingValues(
-                                    bottom = 16.dp
-                                ),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                items(orders.size) { index ->
-                                    val order = orders[index]
-                                    OrderCard(
-                                        order = order,
-                                        showOrderDetails = { orderId ->
-                                            showOrderDetails(orderId)
-                                        }
+                            if (orders.isEmpty()) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "Нет подходящих заказов",
+                                        fontSize = 18.sp,
+                                        color = AppTheme.colors.gray7,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
                                     )
+                                }
+                            } else {
+                                LazyColumn(
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = PaddingValues(
+                                        bottom = 16.dp
+                                    ),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    items(orders.size) { index ->
+                                        val order = orders[index]
+                                        OrderCard(
+                                            order = order,
+                                            showOrderDetails = { orderId ->
+                                                showOrderDetails(orderId)
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }
