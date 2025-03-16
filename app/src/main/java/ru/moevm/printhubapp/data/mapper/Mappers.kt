@@ -50,3 +50,20 @@ fun StatisticDto.toEntity(): Statistic =
         profit = this.profit,
         totalPaperCount = this.total_paper_count
     )
+
+fun Order.toDto(): OrderDto {
+    return OrderDto(
+        client_id = this.clientId,
+        company_id = this.companyId,
+        number = this.number,
+        format = this.format,
+        paper_count = this.paperCount,
+        files = this.files,
+        total_price = this.totalPrice,
+        comment = this.comment,
+        status = this.status,
+        reject_reason = this.rejectReason,
+        created_at = this.createdAt,
+        updated_at = this.updatedAt
+    )
+}

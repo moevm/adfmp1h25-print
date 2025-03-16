@@ -46,7 +46,7 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 fun AddOrderScreen(
     onAbout: () -> Unit,
     onBack: () -> Unit,
-    onNavigateTo: () -> Unit
+    onNavigateTo: (String) -> Unit
 ) {
     var search by remember { mutableStateOf("") }
 

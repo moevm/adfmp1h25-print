@@ -1,5 +1,6 @@
 package ru.moevm.printhubapp.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -11,6 +12,7 @@ import ru.moevm.printhubapp.presentation.client.components.ClientProfileScreen
 import ru.moevm.printhubapp.presentation.client.components.MainClientScreen
 import ru.moevm.printhubapp.presentation.client.components.OrderDetailsScreen
 import ru.moevm.printhubapp.presentation.client.components.SuccessOrderScreen
+import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
 
 fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
     composable(route = Screen.MainClientScreen.route) {
@@ -38,15 +40,18 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
             onBack = {
                 navHostController.popBackStack()
             },
-            onNavigateTo = {
-                navHostController.navigate(Screen.AddOrderParametersScreen.route)
+            onNavigateTo = { companyId: String ->
+                navHostController.navigate("${Screen.AddOrderParametersScreen.route}/$companyId")
             }
         )
     }
 
     composable(
-        route = Screen.AddOrderParametersScreen.route
-    ) {
+        route = "${Screen.AddOrderParametersScreen.route}/{companyId}",
+        arguments = listOf(navArgument("companyId") { type = NavType.StringType })
+    ) { backStackEntry ->
+        val companyId = backStackEntry.arguments?.getString("companyId") ?: "1"
+        val viewModel: AddOrderParametersViewModel = hiltViewModel()
         AddOrderParametersScreen(
             onAbout = {
                 navHostController.navigate(Screen.AboutScreen.route)
@@ -54,9 +59,11 @@ fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
             onBack = {
                 navHostController.popBackStack()
             },
-            createOrder = {
+            onSuccess = {
                 navHostController.navigate(Screen.SuccessScreen.route)
-            }
+            },
+            viewModel = viewModel,
+            companyId = companyId
         )
     }
 

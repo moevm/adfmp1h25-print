@@ -2,13 +2,16 @@ package ru.moevm.printhubapp.data.repository
 
 import android.content.SharedPreferences
 import android.util.Log
+import ru.moevm.printhubapp.data.mapper.toDto
 import ru.moevm.printhubapp.data.mapper.toEntity
 import ru.moevm.printhubapp.data.model.OrderDto
 import ru.moevm.printhubapp.domain.entity.Order
+import ru.moevm.printhubapp.domain.entity.result.RequestError
+import ru.moevm.printhubapp.domain.entity.result.RequestResult
 import ru.moevm.printhubapp.domain.repository.OrdersRepository
+import ru.moevm.printhubapp.utils.Constants.UID_STRING
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
-import ru.moevm.printhubapp.utils.Constants.UID_STRING
 
 class OrdersRepositoryImpl(
     private val db: FirebaseFirestore,
@@ -67,5 +70,15 @@ class OrdersRepositoryImpl(
             }
         }
         return order ?: throw Exception("Order not found")
+    }
+
+    override fun createOrder(newOrder: Order, callback: (RequestResult<Unit>) -> Unit) {
+        val updatedOrder = newOrder.copy(clientId = userUid)
+        val orderDto = updatedOrder.toDto()
+        orders.add(orderDto).addOnSuccessListener {
+            callback(RequestResult.Success(Unit))
+        }.addOnFailureListener { e ->
+            callback(RequestResult.Error(RequestError.Server("Ошибка сохранения данных: ${e.message}")))
+        }
     }
 }

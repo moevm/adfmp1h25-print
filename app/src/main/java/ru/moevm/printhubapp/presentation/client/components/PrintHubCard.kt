@@ -22,11 +22,11 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 @Composable
 fun PrintHubCard(
     printhub: User,
-    onNavigateTo: () -> Unit
+    onNavigateTo: (String) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        onClick = onNavigateTo,
+        onClick = { onNavigateTo(printhub.id) },
         colors = CardDefaults.cardColors(
             containerColor = AppTheme.colors.orange3 ,
             contentColor = AppTheme.colors.black9,

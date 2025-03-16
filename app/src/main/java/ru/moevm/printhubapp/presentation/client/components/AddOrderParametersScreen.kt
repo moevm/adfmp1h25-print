@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -41,21 +43,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.domain.entity.Order
+import ru.moevm.printhubapp.presentation.client.state.AddOrderParametersState
+import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 import ru.moevm.printhubapp.utils.LIMIT_CHAR
+import com.google.firebase.Timestamp
+import kotlin.random.Random
 
 @Composable
 fun AddOrderParametersScreen(
     onBack: () -> Unit,
     onAbout: () -> Unit,
-    createOrder: () -> Unit
+    onSuccess: () -> Unit,
+    viewModel: AddOrderParametersViewModel,
+    companyId: String
 ) {
+    val state = viewModel.state.collectAsState(AddOrderParametersState.Init).value
+    val context = LocalContext.current
+
     var totalPrice by remember { mutableStateOf(0) }
     var showPriceList by remember { mutableStateOf(false) }
     var selectedDropMenu by remember { mutableStateOf(R.string.select_format_print) }
     var printFormat by remember { mutableStateOf(PrintFormatItem.A1) }
     var countList by remember { mutableStateOf(1) }
+    var comment by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
             Column(
@@ -109,6 +124,13 @@ fun AddOrderParametersScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            when (state) {
+                is AddOrderParametersState.Init -> { }
+                is AddOrderParametersState.Loading -> { /* Handle Loading state */ }
+                is AddOrderParametersState.Success -> { /* Handle Success state */ }
+                is AddOrderParametersState.ServerError -> { /* Handle ServerError state */ }
+                else -> {}
+            }
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -139,6 +161,7 @@ fun AddOrderParametersScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 if(selectedDropMenu != R.string.select_format_print) {
                     totalPrice = printFormat.price * countList
+
                 }
                 Text(
                     modifier = Modifier
@@ -151,11 +174,30 @@ fun AddOrderParametersScreen(
                     color = AppTheme.colors.black9
                 )
                 Spacer(modifier = Modifier.height(32.dp))
-                Comment()
+                Comment(comment = comment, onCommentChange = { comment = it })
             }
             val isEnable = (selectedDropMenu != R.string.select_format_print)
             Button(
-                onClick = createOrder,
+                onClick = {
+                    viewModel.createOrder(
+                        Order(
+                            id = "",
+                            clientId = "",
+                            companyId = companyId,
+                            number = Random.nextInt(100000),
+                            format = printFormat.name,
+                            paperCount = countList,
+                            files = "",
+                            totalPrice = totalPrice,
+                            comment = comment,
+                            status = "Создан",
+                            rejectReason = "",
+                            createdAt = Timestamp.now(),
+                            updatedAt = Timestamp.now()
+                        ),
+                        onSuccess = onSuccess
+                    )
+                },
                 enabled = isEnable,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
@@ -374,18 +416,13 @@ private fun ChooseFile() {
 }
 
 @Composable
-private fun Comment() {
-    var comment by remember { mutableStateOf("") }
+private fun Comment(comment: String, onCommentChange: (String) -> Unit) {
     Column {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth().height(185.dp),
             value = comment,
             onValueChange = {
-                comment = if(comment.length < LIMIT_CHAR) {
-                    it
-                } else {
-                    it.take(LIMIT_CHAR)
-                }
+                onCommentChange(if (it.length < LIMIT_CHAR) it else it.take(LIMIT_CHAR))
             },
             placeholder = {
                 Text(
@@ -426,5 +463,11 @@ private fun Comment() {
 @Preview(showBackground = true)
 @Composable
 private fun AddOrderParametersScreenPreview() {
-    AddOrderParametersScreen({}, {}, {})
+    AddOrderParametersScreen(
+        onBack = {},
+        onAbout = {},
+        viewModel = viewModel(),
+        companyId = "dummyCompanyId",
+        onSuccess = {}
+    )
 }
