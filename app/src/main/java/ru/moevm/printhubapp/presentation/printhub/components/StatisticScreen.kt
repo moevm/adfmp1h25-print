@@ -92,48 +92,54 @@ fun StatisticScreen(
             }
         },
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
-                .background(AppTheme.colors.gray1, RoundedCornerShape(16.dp))
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
             when (state) {
                 is StatisticState.Success -> {
                     val statistic = (state as StatisticState.Success).statistic
-                    InfoRow(
-                        titleId = R.string.list_title,
-                        isList = true,
-                        formats = statistic.formatsCount
-                    )
-                    InfoRow(
-                        titleId = R.string.toner_title,
-                        param = (statistic.totalPaperCount * 1).toString()
-                    )
-                    InfoRow(
-                        titleId = R.string.profit_title,
-                        param = statistic.profit.toString()
-                    )
-                    InfoRow(
-                        titleId = R.string.price_printer_title,
-                    )
-                    Text(
-                        modifier = Modifier.padding(top = 16.dp),
-                        text = "*До окупаемости принтера - ${5000 - statistic.profit}",
-                        color = AppTheme.colors.black9
-                    )
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .background(AppTheme.colors.gray1, RoundedCornerShape(16.dp))
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    ) {
+                        InfoRow(
+                            titleId = R.string.list_title,
+                            isList = true,
+                            formats = statistic.formatsCount
+                        )
+                        InfoRow(
+                            titleId = R.string.toner_title,
+                            param = (statistic.totalPaperCount * 1).toString()
+                        )
+                        InfoRow(
+                            titleId = R.string.profit_title,
+                            param = statistic.profit.toString()
+                        )
+                        InfoRow(
+                            titleId = R.string.price_printer_title,
+                        )
+                        Text(
+                            modifier = Modifier.padding(top = 16.dp),
+                            text = "*До окупаемости принтера - ${5000 - statistic.profit}",
+                            color = AppTheme.colors.black9
+                        )
+                    }
                 }
                 is StatisticState.Loading -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         CircularProgressIndicator(
                             color = AppTheme.colors.orange10,
                         )
                     }
                 }
+
                 else -> {}
             }
         }
@@ -166,7 +172,7 @@ private fun InfoRow(
                 color = color
             )
         }
-        if(isList) {
+        if (isList) {
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {

@@ -133,39 +133,44 @@ fun ProfilePrinthubScreen(
             }
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
-                .background(AppTheme.colors.gray1, RoundedCornerShape(16.dp))
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-            when(state) {
+            when (state) {
                 is ProfileState.Success -> {
                     val user = (state as ProfileState.Success).user
-                    InfoRow(
-                        titleId = R.string.name_printhub_title,
-                        param = user.nameCompany
-                    )
-                    InfoRow(
-                        titleId = R.string.address_title,
-                        param = user.address
-                    )
-                    InfoRow(
-                        titleId = R.string.statistics_title,
-                        isNavigate = true,
-                        onNavigate = {
-                            onStatistic()
-                        }
-                    )
-                    InfoRow(
-                        titleId = R.string.logout,
-                        isNavigate = true,
-                        color = AppTheme.colors.red,
-                        onNavigate = {
-                            showLogoutDialog = true
-                        }
-                    )
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .background(AppTheme.colors.gray1, RoundedCornerShape(16.dp))
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    ) {
+                        InfoRow(
+                            titleId = R.string.name_printhub_title,
+                            param = user.nameCompany
+                        )
+                        InfoRow(
+                            titleId = R.string.address_title,
+                            param = user.address
+                        )
+                        InfoRow(
+                            titleId = R.string.statistics_title,
+                            isNavigate = true,
+                            onNavigate = {
+                                onStatistic()
+                            }
+                        )
+                        InfoRow(
+                            titleId = R.string.logout,
+                            isNavigate = true,
+                            color = AppTheme.colors.red,
+                            onNavigate = {
+                                showLogoutDialog = true
+                            }
+                        )
+                    }
                 }
 
                 is ProfileState.Loading -> {
@@ -178,7 +183,6 @@ fun ProfilePrinthubScreen(
                         )
                     }
                 }
-
                 else -> {}
             }
         }
@@ -213,8 +217,7 @@ private fun InfoRow(
             modifier = Modifier
                 .padding(vertical = 16.dp)
                 .fillMaxWidth()
-                .clickable { onNavigate() }
-            ,
+                .clickable { onNavigate() },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
