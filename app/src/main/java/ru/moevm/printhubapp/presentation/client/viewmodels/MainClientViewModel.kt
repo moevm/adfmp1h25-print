@@ -137,7 +137,6 @@ class MainClientViewModel @Inject constructor(
     private fun applyAllFilters() {
         viewModelScope.launch {
             var filteredOrders = allOrders
-
             if (currentStatusFilters.isNotEmpty()) {
                 filteredOrders = filteredOrders.filter { order ->
                     currentStatusFilters.contains(order.status)
@@ -164,8 +163,8 @@ class MainClientViewModel @Inject constructor(
                 SortOption.UPDATED_NEWEST_FIRST -> filteredOrders.sortedByDescending { it.updatedAt }
                 SortOption.UPDATED_OLDEST_FIRST -> filteredOrders.sortedBy { it.updatedAt }
             }
-
-            _state.value = MainClientState.Success(filteredOrders)
+            allOrders = filteredOrders
+            _state.value = MainClientState.Success(allOrders)
         }
     }
 }

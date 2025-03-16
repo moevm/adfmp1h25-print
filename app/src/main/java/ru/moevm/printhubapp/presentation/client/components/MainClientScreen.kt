@@ -71,11 +71,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
 import ru.moevm.printhubapp.R
-import ru.moevm.printhubapp.navigation.Screen
 import ru.moevm.printhubapp.presentation.client.state.MainClientState
 import ru.moevm.printhubapp.presentation.client.viewmodels.MainClientViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
@@ -222,7 +221,8 @@ fun MainClientScreen(
                             fontSize = 18.sp,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
+                                .padding(16.dp)
+                                .align(Alignment.Center),
                             color = AppTheme.colors.gray7
                         )
                     } else {
@@ -304,7 +304,7 @@ fun MainClientScreen(
                                     ) {
                                         Text(
                                             text = "Цена",
-                                            color = if (priceFilterApplied) AppTheme.colors.black9 else Color.White
+                                            color = Color.White
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -323,7 +323,7 @@ fun MainClientScreen(
                                     ) {
                                         Text(
                                             text = "Формат печати",
-                                            color = if (formatFilterApplied) AppTheme.colors.black9 else Color.White
+                                            color = Color.White
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -357,7 +357,7 @@ fun MainClientScreen(
                                     ) {
                                         Text(
                                             text = displayText,
-                                            color = if (isSelected) AppTheme.colors.black9 else Color.White
+                                            color = Color.White
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -412,6 +412,7 @@ fun MainClientScreen(
     }
     if (openFilterBottomSheet) {
         FilterBottomSheet(
+            viewModel = viewModel,
             filterBottomSheetState,
             scope
         ) {
@@ -421,6 +422,7 @@ fun MainClientScreen(
 
     if (openFormatPrinterFilterBottomSheet) {
         FormatPrintBottomSheet(
+            viewModel = viewModel,
             sheetState = filterFormatPrinterBottomSheetState,
             scope = scopeFormatPrinter,
             openFormatPrinterFilterBottomSheet = { openFormatPrinterFilterBottomSheet = false },
@@ -434,6 +436,7 @@ fun MainClientScreen(
 
     if (openAmountFilterBottomSheet) {
         AmountFilterBottomSheet(
+            viewModel = viewModel,
             sheetState = filterAmountBottomSheetState,
             scope = scopeAmount,
             openAmountFilterBottomSheet = { openAmountFilterBottomSheet = false },
@@ -451,6 +454,7 @@ fun MainClientScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FormatPrintBottomSheet(
+    viewModel: MainClientViewModel,
     sheetState: SheetState,
     scope: CoroutineScope,
     openFormatPrinterFilterBottomSheet: () -> Unit,
@@ -470,7 +474,6 @@ private fun FormatPrintBottomSheet(
             addAll(filterOptions.map { selectedFormats.contains(it) })
         }
     }
-    val viewModel: MainClientViewModel = hiltViewModel()
 
     ModalBottomSheet(
         onDismissRequest = { openFormatPrinterFilterBottomSheet() },
@@ -571,6 +574,7 @@ private fun FormatPrintBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AmountFilterBottomSheet(
+    viewModel: MainClientViewModel,
     sheetState: SheetState,
     scope: CoroutineScope,
     openAmountFilterBottomSheet: () -> Unit,
@@ -580,7 +584,6 @@ private fun AmountFilterBottomSheet(
 ) {
     var inAmount by remember { mutableStateOf(minPrice) }
     var outAmount by remember { mutableStateOf(maxPrice) }
-    val viewModel: MainClientViewModel = hiltViewModel()
     ModalBottomSheet(
         onDismissRequest = { openAmountFilterBottomSheet() },
         sheetState = sheetState,
@@ -718,11 +721,11 @@ private fun AmountFilterBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FilterBottomSheet(
+    viewModel: MainClientViewModel,
     sheetState: SheetState,
     scope: CoroutineScope,
     openFilterBottomSheet: () -> Unit
 ) {
-    val viewModel: MainClientViewModel = hiltViewModel()
     val currentSortOption = remember { mutableStateOf(viewModel.getCurrentSortOption()) }
 
     val filterOptions = listOf(
