@@ -42,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -173,6 +174,7 @@ fun RegistrationScreen(
                         color = AppTheme.colors.black9
                     ),
                     shape = RoundedCornerShape(12.dp),
+                    visualTransformation = PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = AppTheme.colors.gray1,
                         focusedContainerColor = AppTheme.colors.gray1,

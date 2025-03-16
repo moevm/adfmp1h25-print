@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -82,7 +84,8 @@ fun OrderDetailsScreen(
                             tint = AppTheme.colors.black9
                         )
                         Spacer(modifier = Modifier.width(12.dp))
-                        val id = if(state is OrderDetailsState.Success) (state as OrderDetailsState.Success).order.number else ""
+                        val id =
+                            if (state is OrderDetailsState.Success) (state as OrderDetailsState.Success).order.number else ""
                         Text(
                             text = String.format(
                                 stringResource(R.string.order_details_title),
@@ -106,86 +109,112 @@ fun OrderDetailsScreen(
             }
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
         ) {
             when (state) {
                 is OrderDetailsState.Success -> {
                     val order = (state as OrderDetailsState.Success).order
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
-                        Text(
-                            text = "Статус заказа",
-                            fontSize = 16.sp,
-                            color = AppTheme.colors.gray7
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Статус заказа",
+                                fontSize = 16.sp,
+                                color = AppTheme.colors.gray7
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                modifier = Modifier
+                                    .background(
+                                        getStatusColor(order.status),
+                                        RoundedCornerShape(10.dp)
+                                    )
+                                    .padding(vertical = 4.dp, horizontal = 8.dp),
+                                text = getDisplayStatus(order.status),
+                                fontSize = 16.sp,
+                                color = Color.White
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        OrderCardDetails(order)
+                        DetailsRow(
+                            titleId = R.string.format_print,
+                            parameter = order.format
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        DetailsRow(
+                            titleId = R.string.count_list_with_param,
+                            parameter = order.paperCount.toString()
+                        )
+                        DetailsRow(
+                            titleId = R.string.file,
+                            parameter = ""
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             modifier = Modifier
-                                .background(
-                                    getStatusColor(order.status),
-                                    RoundedCornerShape(10.dp)
-                                )
+                                .align(Alignment.End)
+                                .background(AppTheme.colors.orange3, RoundedCornerShape(16.dp))
                                 .padding(vertical = 4.dp, horizontal = 8.dp),
-                            text = getDisplayStatus(order.status),
-                            fontSize = 16.sp,
-                            color = Color.White
+                            text = "Итого: ${order.totalPrice} ₽",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = AppTheme.colors.black9
                         )
+                        if (order.comment.isNotEmpty()) {
+                            Spacer(Modifier.height(16.dp))
+                            Comment(
+                                titleId = R.string.placeholder_comment,
+                                comment = order.comment
+                            )
+                        }
+                        if (order.rejectReason.isNotEmpty()) {
+                            Spacer(Modifier.height(16.dp))
+                            Comment(
+                                titleId = R.string.reason_reject,
+                                comment = order.rejectReason
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    OrderCardDetails(order)
-                    DetailsRow(
-                        titleId = R.string.format_print,
-                        parameter = order.format
-                    )
-                    DetailsRow(
-                        titleId = R.string.count_list_with_param,
-                        parameter = order.paperCount.toString()
-                    )
-                    DetailsRow(
-                        titleId = R.string.file,
-                        parameter = ""
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.End)
-                            .background(AppTheme.colors.orange3, RoundedCornerShape(16.dp))
-                            .padding(vertical = 4.dp, horizontal = 8.dp),
-                        text = "Итого: ${order.totalPrice} ₽",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = AppTheme.colors.black9
-                    )
-                    if(order.comment.isNotEmpty()) {
-                        Spacer(Modifier.height(16.dp))
-                        Comment(
-                            titleId = R.string.placeholder_comment,
-                            comment = order.comment
-                        )
-                    }
-                    if (order.rejectReason.isNotEmpty()) {
-                        Spacer(Modifier.height(16.dp))
-                        Comment(
-                            titleId = R.string.reason_reject,
-                            comment = order.rejectReason
-                        )
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .padding(16.dp)
+                    ) {
+                        FloatingActionButton(
+                            onClick = { },
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(16.dp),
+                            shape = CircleShape,
+                            containerColor = AppTheme.colors.orange10,
+                            contentColor = AppTheme.colors.black9
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.share_ic),
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
+
                 is OrderDetailsState.Loading -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         CircularProgressIndicator(
                             color = AppTheme.colors.orange10,
                         )
                     }
                 }
+
                 else -> {}
             }
         }
