@@ -1,4 +1,4 @@
-package ru.moevm.printhubapp.presentation.printhub
+package ru.moevm.printhubapp.presentation.printhub.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,15 +10,17 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.domain.entity.Order
+import ru.moevm.printhubapp.presentation.client.utils.formatToString
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
-fun DateOrderCard() {
+fun DateOrderCard(
+    order: Order
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -30,12 +32,12 @@ fun DateOrderCard() {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = stringResource(R.string.date_of_create),
+                text = "Дата создания: ${order.createdAt.formatToString()}",
                 fontSize = 16.sp,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.date_of_last_change),
+                text = "Дата обновления: ${order.updatedAt.formatToString()}",
                 fontSize = 16.sp,
             )
         }
@@ -45,5 +47,9 @@ fun DateOrderCard() {
 @Preview(showBackground = true)
 @Composable
 private fun DateOrderCardPreview() {
-    DateOrderCard()
+    val order = Order(
+        id = "1",
+        status = "В процессе"
+    )
+    DateOrderCard(order = order)
 }
