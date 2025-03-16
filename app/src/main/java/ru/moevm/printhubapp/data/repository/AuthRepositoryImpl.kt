@@ -77,7 +77,14 @@ class AuthRepositoryImpl(
                     val statisticId = if (newUser.role.toString().lowercase() == "printhub") {
                         val statistic = mapOf(
                             "companyId" to currentUserId,
-                            "formatsCount" to mapOf<String, Int>(),
+                            "formatsCount" to mapOf(
+                                "A1" to 0,
+                                "A2" to 0,
+                                "A3" to 0,
+                                "A4" to 0,
+                                "A5" to 0,
+                                "A6" to 0
+                            ),
                             "profit" to 0,
                             "totalPaperCount" to 0
                         )

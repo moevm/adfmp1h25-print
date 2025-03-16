@@ -54,9 +54,10 @@ object DataModule {
     @Provides
     @Singleton
     fun providePrinthubsRepository(
-        db: FirebaseFirestore
+        db: FirebaseFirestore,
+        sharedPreferences: SharedPreferences
     ): PrinthubsRepository {
-        return PrinthubsRepositoryImpl(db)
+        return PrinthubsRepositoryImpl(db, sharedPreferences)
     }
 
     @Provides

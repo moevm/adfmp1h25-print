@@ -11,11 +11,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ru.moevm.printhubapp.R
+import ru.moevm.printhubapp.presentation.printhub.state.MainPrinthubState
+import ru.moevm.printhubapp.presentation.printhub.state.StatisticState
+import ru.moevm.printhubapp.presentation.printhub.viewmodels.MainPrinthubViewModel
+import ru.moevm.printhubapp.presentation.printhub.viewmodels.StatisticViewModel
 import ru.moevm.printhubapp.ui.theme.AppTheme
 
 @Composable
@@ -33,6 +42,14 @@ fun StatisticScreen(
     onBack: () -> Unit,
     onAbout: () -> Unit
 ) {
+
+    val viewModel: StatisticViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getStatistic()
+    }
+
     Scaffold(
         topBar = {
             Column(
@@ -87,26 +104,39 @@ fun StatisticScreen(
                 .background(AppTheme.colors.gray1, RoundedCornerShape(16.dp))
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-            InfoRow(
-                titleId = R.string.list_title,
-                isList = true
-            )
-            InfoRow(
-                titleId = R.string.toner_title,
-                param = "20"
-            )
-            InfoRow(
-                titleId = R.string.profit_title,
-                param = "1000"
-            )
-            InfoRow(
-                titleId = R.string.price_printer_title,
-            )
-            Text(
-                modifier = Modifier.padding(top = 16.dp),
-                text = "*До окупаемости принтера - 4000",
-                color = AppTheme.colors.black9
-            )
+            when (state) {
+                is StatisticState.Success -> {
+                    val statistic = (state as StatisticState.Success).statistic
+                    InfoRow(
+                        titleId = R.string.list_title,
+                        isList = true,
+                        formats = statistic.formatsCount
+                    )
+                    InfoRow(
+                        titleId = R.string.toner_title,
+                        param = (statistic.totalPaperCount * 1).toString()
+                    )
+                    InfoRow(
+                        titleId = R.string.profit_title,
+                        param = statistic.profit.toString()
+                    )
+                    InfoRow(
+                        titleId = R.string.price_printer_title,
+                    )
+                    Text(
+                        modifier = Modifier.padding(top = 16.dp),
+                        text = "*До окупаемости принтера - ${5000 - statistic.profit}",
+                        color = AppTheme.colors.black9
+                    )
+                }
+                is StatisticState.Loading -> {
+                    CircularProgressIndicator(
+                        color = AppTheme.colors.orange10,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+                else -> {}
+            }
         }
     }
 }
@@ -117,7 +147,8 @@ private fun InfoRow(
     titleId: Int,
     param: String = "",
     color: Color = AppTheme.colors.black9,
-    isList: Boolean = false
+    isList: Boolean = false,
+    formats: Map<String, Int> = mapOf()
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -142,42 +173,42 @@ private fun InfoRow(
             ) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    text = "A1: 10 штук",
+                    text = "A1: ${formats["A1"]} штук",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
                     color = color
                 )
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    text = "A2: 10 штук",
+                    text = "A2: ${formats["A2"]} штук",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
                     color = color
                 )
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    text = "A3: 10 штук",
+                    text = "A3: ${formats["A3"]} штук",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
                     color = color
                 )
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    text = "A4: 10 штук",
+                    text = "A4: ${formats["A4"]} штук",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
                     color = color
                 )
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    text = "A5: 10 штук",
+                    text = "A5: ${formats["A5"]} штук",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
                     color = color
                 )
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    text = "A6: 10 штук",
+                    text = "A6: ${formats["A6"]} штук",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
                     color = color

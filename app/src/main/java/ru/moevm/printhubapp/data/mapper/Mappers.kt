@@ -45,10 +45,10 @@ fun OrderDto.toEntity(): Order =
 
 fun StatisticDto.toEntity(): Statistic =
     Statistic(
-        companyId = this.company_id,
-        formatsCount = this.formats_count,
+        companyId = this.companyId,
+        formatsCount = this.formatsCount,
         profit = this.profit,
-        totalPaperCount = this.total_paper_count
+        totalPaperCount = this.totalPaperCount
     )
 
 fun Order.toDto(): OrderDto {

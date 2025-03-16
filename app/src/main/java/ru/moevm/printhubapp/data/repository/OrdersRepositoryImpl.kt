@@ -21,6 +21,7 @@ class OrdersRepositoryImpl(
 
     private val orders = db.collection("orders")
     private val users = db.collection("users")
+    private val statistics = db.collection("statistics")
 
     private val userUid = sharedPreferences.getString(UID_STRING, "") ?: ""
 
@@ -122,7 +123,39 @@ class OrdersRepositoryImpl(
         }
 
         documentRef.update(updates).addOnSuccessListener {
-            callback(RequestResult.Success(Unit))
+            if (updatedOrder.status == "Выполнен") {
+                statistics.whereEqualTo("companyId", updatedOrder.companyId).get().addOnSuccessListener { querySnapshot ->
+                    val statisticDocument = querySnapshot.documents.firstOrNull()
+                    if (statisticDocument != null) {
+                        val statisticRef = statistics.document(statisticDocument.id)
+                        val currentFormatsCount = statisticDocument.get("formatsCount") as Map<String, Int>
+                        val currentProfit = statisticDocument.getLong("profit")?.toInt() ?: 0
+                        val currentTotalPaperCount = statisticDocument.getLong("totalPaperCount")?.toInt() ?: 0
+
+                        val updatedFormatsCount = currentFormatsCount.toMutableMap().apply {
+                            this[updatedOrder.format] = this.getOrDefault(updatedOrder.format, 0) + updatedOrder.paperCount
+                        }
+
+                        val statisticUpdates = mutableMapOf<String, Any>(
+                            "formatsCount" to updatedFormatsCount,
+                            "profit" to (currentProfit + updatedOrder.totalPrice),
+                            "totalPaperCount" to (currentTotalPaperCount + updatedOrder.paperCount)
+                        )
+
+                        statisticRef.update(statisticUpdates).addOnSuccessListener {
+                            callback(RequestResult.Success(Unit))
+                        }.addOnFailureListener { e ->
+                            callback(RequestResult.Error(RequestError.Server("Ошибка обновления статистики: ${e.message}")))
+                        }
+                    } else {
+                        callback(RequestResult.Error(RequestError.Server("Статистика не найдена")))
+                    }
+                }.addOnFailureListener { e ->
+                    callback(RequestResult.Error(RequestError.Server("Ошибка получения статистики: ${e.message}")))
+                }
+            } else {
+                callback(RequestResult.Success(Unit))
+            }
         }.addOnFailureListener { e ->
             callback(RequestResult.Error(RequestError.Server("Ошибка обновления данных: ${e.message}")))
         }
