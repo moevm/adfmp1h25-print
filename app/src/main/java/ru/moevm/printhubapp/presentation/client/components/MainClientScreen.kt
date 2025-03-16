@@ -82,12 +82,12 @@ import ru.moevm.printhubapp.ui.theme.AppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainClientScreen(
+    viewModel: MainClientViewModel,
     navHostController: NavHostController,
     onAbout: () -> Unit,
     addOrder: () -> Unit,
     showOrderDetails: (Any?) -> Unit
 ) {
-    val viewModel: MainClientViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     var search by remember { mutableStateOf("") }
@@ -862,5 +862,6 @@ private fun FilterBottomSheet(
 @Composable
 private fun MainClientScreenPreview() {
     val navHostController = rememberNavController()
-    MainClientScreen(navHostController, {}, {}, {})
+    val viewModel: MainClientViewModel = hiltViewModel()
+    MainClientScreen(viewModel,navHostController, {}, {}, {})
 }
