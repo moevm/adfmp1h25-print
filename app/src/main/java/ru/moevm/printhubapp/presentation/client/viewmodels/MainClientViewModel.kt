@@ -84,7 +84,6 @@ class MainClientViewModel @Inject constructor(
     }
 
     fun searchOrders(query: String) {
-//        if (!initialLoadComplete) return
         try {
             currentSearchQuery = query
             applyAllFilters()

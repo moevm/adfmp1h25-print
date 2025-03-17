@@ -84,11 +84,21 @@ fun MainPrinthubScreen(
     onAbout: () -> Unit,
     onOrderDetails: (Any?) -> Unit,
 ) {
-    var search by remember { mutableStateOf("") }
-    val searchQuery = remember { MutableStateFlow("") }
 
     val viewModel: MainPrinthubViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+
+    var search by remember { mutableStateOf("") }
+    val searchQuery = remember { MutableStateFlow("") }
+
+    LaunchedEffect(searchQuery) {
+        searchQuery
+            .debounce(500)
+            .collectLatest { query ->
+                viewModel.searchOrders(query)
+            }
+    }
+
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
 
     var openFilterBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -109,13 +119,15 @@ fun MainPrinthubScreen(
     val filterFormatPrinterBottomSheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = skipFormatPrinterPartiallyExpanded)
 
-    LaunchedEffect(searchQuery) {
-        searchQuery
-            .debounce(500)
-            .collectLatest { query ->
-                viewModel.searchOrders(query)
-            }
-    }
+    val priceFilterApplied by viewModel.priceFilterApplied.collectAsState()
+    var minPrice by rememberSaveable { mutableStateOf("0") }
+    var maxPrice by rememberSaveable { mutableStateOf("10000") }
+
+    val formatFilterApplied by viewModel.formatFilterApplied.collectAsState()
+    var selectedFormats by rememberSaveable { mutableStateOf(setOf<String>()) }
+
+    val selectedStatuses by viewModel.selectedStatuses.collectAsState()
+
 
     LaunchedEffect(Unit) {
         navBackStackEntry?.destination?.route?.let { route ->
@@ -216,12 +228,19 @@ fun MainPrinthubScreen(
 
                 is MainPrinthubState.Success -> {
                     val orders = (state as MainPrinthubState.Success).orders
-                    if (orders.isEmpty()) {
+                    if (orders.isEmpty() && selectedStatuses.isEmpty() && !priceFilterApplied && selectedFormats.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                         Text(
                             text = stringResource(R.string.no_order),
                             fontSize = 18.sp,
                             color = AppTheme.colors.gray7
                         )
+                            }
                     } else {
                         Column(
                             modifier = Modifier.padding(horizontal = 16.dp)
@@ -245,7 +264,7 @@ fun MainPrinthubScreen(
                                 },
                                 singleLine = true,
                                 textStyle = TextStyle(
-                                    fontSize = 20.sp,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.Normal,
                                     color = AppTheme.colors.black9
                                 ),
@@ -273,7 +292,7 @@ fun MainPrinthubScreen(
                                                 openFilterBottomSheet = true
                                             }
                                             .background(
-                                                AppTheme.colors.gray7,
+                                                AppTheme.colors.orange10,
                                                 RoundedCornerShape(12.dp)
                                             )
                                             .padding(4.dp)
@@ -282,7 +301,7 @@ fun MainPrinthubScreen(
                                             modifier = Modifier.size(20.dp),
                                             painter = painterResource(R.drawable.sort_ic),
                                             contentDescription = null,
-                                            tint = Color.White
+                                            tint = AppTheme.colors.black9
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -294,7 +313,7 @@ fun MainPrinthubScreen(
                                                 openAmountFilterBottomSheet = true
                                             }
                                             .background(
-                                                AppTheme.colors.gray7,
+                                                if (priceFilterApplied) AppTheme.colors.orange10 else AppTheme.colors.gray7,
                                                 RoundedCornerShape(12.dp)
                                             )
                                             .padding(4.dp)
@@ -313,7 +332,7 @@ fun MainPrinthubScreen(
                                                 openFormatPrinterFilterBottomSheet = true
                                             }
                                             .background(
-                                                AppTheme.colors.gray7,
+                                                if (formatFilterApplied) AppTheme.colors.orange10 else AppTheme.colors.gray7,
                                                 RoundedCornerShape(12.dp)
                                             )
                                             .padding(4.dp)
@@ -325,102 +344,69 @@ fun MainPrinthubScreen(
                                     }
                                     Spacer(modifier = Modifier.width(4.dp))
                                 }
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                AppTheme.colors.gray7,
-                                                RoundedCornerShape(12.dp)
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "Создан",
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                AppTheme.colors.gray7,
-                                                RoundedCornerShape(12.dp)
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "В работе",
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                AppTheme.colors.gray7,
-                                                RoundedCornerShape(12.dp)
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "Ожидает получения",
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                AppTheme.colors.gray7,
-                                                RoundedCornerShape(12.dp)
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "Получен",
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                AppTheme.colors.gray7,
-                                                RoundedCornerShape(12.dp)
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "Отказ",
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
+                                val statuses = listOf(
+                                    "Создан" to "Создан",
+                                    "В работе" to "В работе",
+                                    "Ожидает получения" to "Готов к получению",
+                                    "Выполнен" to "Получен",
+                                    "Отказ" to "Отказ"
+                                )
+                                items(statuses.size) { index ->
+                                    val (statusCode, displayText) = statuses[index]
+                                    val isSelected = selectedStatuses.contains(statusCode)
 
+                                    Box(
+                                        modifier = Modifier
+                                            .clickable {
+                                                viewModel.filterByStatuses(
+                                                    if (isSelected) selectedStatuses - statusCode
+                                                    else selectedStatuses + statusCode
+                                                )
+                                            }
+                                            .background(
+                                                if (isSelected) AppTheme.colors.orange10 else AppTheme.colors.gray7,
+                                                RoundedCornerShape(12.dp)
+                                            )
+                                            .padding(4.dp)
+                                    ) {
+                                        Text(
+                                            text = displayText,
+                                            color = Color.White
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                }
                             }
-
-                            LazyColumn(
-                                modifier = Modifier.weight(1f),
-                                contentPadding = PaddingValues(
-                                    bottom = 16.dp
-                                ),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                items(orders.size) { index ->
-                                    val order = orders[index]
-                                    OrderPrinthubCard(
-                                        order = order,
-                                        openDetails = { onOrderDetails(order.id) }
+                            if (orders.isEmpty()) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "Нет подходящих заказов",
+                                        fontSize = 18.sp,
+                                        color = AppTheme.colors.gray7,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
                                     )
+                                }
+                            } else {
+                                LazyColumn(
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = PaddingValues(
+                                        bottom = 16.dp
+                                    ),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    items(orders.size) { index ->
+                                        val order = orders[index]
+                                        OrderPrinthubCard(
+                                            order = order,
+                                            openDetails = { onOrderDetails(order.id) }
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -435,6 +421,7 @@ fun MainPrinthubScreen(
 
     if (openFilterBottomSheet) {
         FilterBottomSheet(
+            viewModel = viewModel,
             filterBottomSheetState,
             scope
         ) {
@@ -442,33 +429,35 @@ fun MainPrinthubScreen(
         }
     }
 
-    if (openAmountFilterBottomSheet) {
-        AmountFilterBottomSheet(
-            filterAmountBottomSheetState,
-            scopeAmount
-        ) {
-            openAmountFilterBottomSheet = false
-        }
-    }
-
     if (openFormatPrinterFilterBottomSheet) {
         FormatPrintBottomSheet(
-            filterFormatPrinterBottomSheetState,
-            scopeFormatPrinter
-        ) {
-            openFormatPrinterFilterBottomSheet = false
-        }
+            viewModel = viewModel,
+            sheetState = filterFormatPrinterBottomSheetState,
+            scope = scopeFormatPrinter,
+            openFormatPrinterFilterBottomSheet = { openFormatPrinterFilterBottomSheet = false }
+        )
+    }
+
+    if (openAmountFilterBottomSheet) {
+       AmountFilterBottomSheet(
+            viewModel = viewModel,
+            sheetState = filterAmountBottomSheetState,
+            scope = scopeAmount,
+            openAmountFilterBottomSheet = { openAmountFilterBottomSheet = false }
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FormatPrintBottomSheet(
+    viewModel: MainPrinthubViewModel,
     sheetState: SheetState,
     scope: CoroutineScope,
     openFormatPrinterFilterBottomSheet: () -> Unit
 ) {
-    val checkedStates = remember { mutableStateListOf(false, false, false, false, false, false) }
+    val selectedFormats by viewModel.formatFilters.collectAsState()
+
     val filterOptions = listOf(
         "A1",
         "A2",
@@ -477,6 +466,12 @@ private fun FormatPrintBottomSheet(
         "A5",
         "A6"
     )
+    val checkedStates = remember {
+        mutableStateListOf<Boolean>().apply {
+            addAll(filterOptions.map { selectedFormats.contains(it) })
+        }
+    }
+
     ModalBottomSheet(
         onDismissRequest = { openFormatPrinterFilterBottomSheet() },
         sheetState = sheetState,
@@ -515,6 +510,12 @@ private fun FormatPrintBottomSheet(
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 onClick = {
+                    val newSelectedFormats = filterOptions
+                        .filterIndexed { index, _ -> checkedStates[index] }
+                        .toSet()
+
+                    viewModel.filterByFormats(newSelectedFormats)
+
                     scope
                         .launch { sheetState.hide() }
                         .invokeOnCompletion {
@@ -569,12 +570,16 @@ private fun FormatPrintBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AmountFilterBottomSheet(
+    viewModel: MainPrinthubViewModel,
     sheetState: SheetState,
     scope: CoroutineScope,
     openAmountFilterBottomSheet: () -> Unit
 ) {
-    var inAmount by remember { mutableStateOf("0") }
-    var outAmount by remember { mutableStateOf("10000") }
+    val minPrice by viewModel.minPrice.collectAsState()
+    val maxPrice by viewModel.maxPrice.collectAsState()
+
+    var inAmount by remember { mutableStateOf(minPrice) }
+    var outAmount by remember { mutableStateOf(maxPrice) }
     ModalBottomSheet(
         onDismissRequest = { openAmountFilterBottomSheet() },
         sheetState = sheetState,
@@ -650,6 +655,8 @@ private fun AmountFilterBottomSheet(
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 onClick = {
+                    viewModel.filterByPriceRange(inAmount, outAmount)
+
                     scope
                         .launch { sheetState.hide() }
                         .invokeOnCompletion {
@@ -704,17 +711,23 @@ private fun AmountFilterBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FilterBottomSheet(
+    viewModel: MainPrinthubViewModel,
     sheetState: SheetState,
     scope: CoroutineScope,
     openFilterBottomSheet: () -> Unit
 ) {
+    val currentSortOption = remember { mutableStateOf(viewModel.getCurrentSortOption()) }
+
     val filterOptions = listOf(
-        "По дате создания: сначала новые",
-        "По дате создания: сначала старые",
-        "По дате обновления: сначала новые",
-        "По дате обновления: сначала старые"
+        "По дате создания: сначала новые" to MainPrinthubViewModel.SortOption.CREATED_NEWEST_FIRST,
+        "По дате создания: сначала старые" to MainPrinthubViewModel.SortOption.CREATED_OLDEST_FIRST,
+        "По дате обновления: сначала новые" to MainPrinthubViewModel.SortOption.UPDATED_NEWEST_FIRST,
+        "По дате обновления: сначала старые" to MainPrinthubViewModel.SortOption.UPDATED_OLDEST_FIRST
     )
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(filterOptions[0]) }
+
+    val initialSelectedText = filterOptions.first { it.second == currentSortOption.value }.first
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(initialSelectedText) }
+
     ModalBottomSheet(
         onDismissRequest = { openFilterBottomSheet() },
         sheetState = sheetState,
@@ -725,7 +738,7 @@ private fun FilterBottomSheet(
             Column(
                 modifier = Modifier.selectableGroup()
             ) {
-                filterOptions.forEach { text ->
+                filterOptions.forEach { (text, _) ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -759,6 +772,9 @@ private fun FilterBottomSheet(
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 onClick = {
+                    val sortOption = filterOptions.first { it.first == selectedOption }.second
+                    viewModel.sortOrders(sortOption)
+
                     scope
                         .launch { sheetState.hide() }
                         .invokeOnCompletion {
