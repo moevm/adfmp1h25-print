@@ -2,11 +2,13 @@ package ru.moevm.printhubapp.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import ru.moevm.printhubapp.presentation.printhub.MainPrinthubScreen
-import ru.moevm.printhubapp.presentation.printhub.OrderDetailsPrinthubScreen
-import ru.moevm.printhubapp.presentation.printhub.ProfilePrinthubScreen
-import ru.moevm.printhubapp.presentation.printhub.StatisticScreen
+import androidx.navigation.navArgument
+import ru.moevm.printhubapp.presentation.printhub.components.MainPrinthubScreen
+import ru.moevm.printhubapp.presentation.printhub.components.OrderDetailsPrinthubScreen
+import ru.moevm.printhubapp.presentation.printhub.components.ProfilePrinthubScreen
+import ru.moevm.printhubapp.presentation.printhub.components.StatisticScreen
 
 fun NavGraphBuilder.printhubNavigation(
     navController: NavHostController,
@@ -20,8 +22,8 @@ fun NavGraphBuilder.printhubNavigation(
             onAbout = {
                 navController.navigate(Screen.AboutScreen.route)
             },
-            onOrderDetails = {
-                navController.navigate(Screen.OrderDetailsPrinthubScreen.route)
+            onOrderDetails = { orderId ->
+                navController.navigate("${Screen.OrderDetailsPrinthubScreen.route}/$orderId")
             }
         )
     }
@@ -55,16 +57,18 @@ fun NavGraphBuilder.printhubNavigation(
     }
 
     composable(
-        route = Screen.OrderDetailsPrinthubScreen.route
-    ) {
+        route = "${Screen.OrderDetailsPrinthubScreen.route}/{orderId}",
+        arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+    ) { backStackEntry ->
+        val orderId = backStackEntry.arguments?.getString("orderId") ?: "1"
         OrderDetailsPrinthubScreen(
-            idOrder = 1,
             onBack = {
                 navController.popBackStack()
             },
             onAbout = {
                 navController.navigate(Screen.AboutScreen.route)
-            }
+            },
+            orderId = orderId
         )
     }
 }

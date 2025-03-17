@@ -168,13 +168,13 @@ fun RegistrationScreen(
                         )
                     },
                     singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
                     textStyle = TextStyle(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Normal,
                         color = AppTheme.colors.black9
                     ),
                     shape = RoundedCornerShape(12.dp),
+                    visualTransformation = PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = AppTheme.colors.gray1,
                         focusedContainerColor = AppTheme.colors.gray1,
@@ -396,7 +396,7 @@ private fun showToast(context: Context, state: RegistrationState) {
 
 @Preview(showBackground = true)
 @Composable
-private fun RegistrationScreenPreview() {
+private fun AuthScreenPreview() {
     val viewModel: RegistrationViewModel = hiltViewModel()
     RegistrationScreen(viewModel, {}, {})
 }

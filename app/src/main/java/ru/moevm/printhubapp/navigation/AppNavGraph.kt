@@ -10,6 +10,7 @@ fun AppNavGraph(navHostController: NavHostController) {
         navController = navHostController,
         startDestination = Screen.SplashScreen.route
     ) {
+
         splashNavigation(navHostController)
         authNavigation(navHostController)
         aboutNavigation(navHostController)
