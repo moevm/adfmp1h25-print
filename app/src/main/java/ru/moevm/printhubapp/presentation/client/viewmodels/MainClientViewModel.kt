@@ -21,8 +21,7 @@ class MainClientViewModel @Inject constructor(
     val state: StateFlow<MainClientState> get() = _state.asStateFlow()
 
     private var initialLoadComplete = false
-
-    private var originalOrders: List<Order> = emptyList()
+    private var originalOrders: List<Order>? = null
     private var currentStatusFilters: Set<String> = emptySet()
     private var currentMinPrice: Int? = null
     private var currentMaxPrice: Int? = null
@@ -64,10 +63,9 @@ class MainClientViewModel @Inject constructor(
     }
 
     fun sortOrders(sortOption: SortOption) {
-        viewModelScope.launch {
-            currentSortOption = sortOption
-            applyAllFilters()
-        }
+        if (!initialLoadComplete) return
+        currentSortOption = sortOption
+        applyAllFilters()
     }
 
     private fun getClientOrders() {
@@ -76,13 +74,8 @@ class MainClientViewModel @Inject constructor(
             try {
                 val orders = getClientOrdersUseCase()
                 originalOrders = orders
-
-                if (!initialLoadComplete) {
-                    applyAllFilters()
-                    initialLoadComplete = true
-                } else {
-                    applyAllFilters()
-                }
+                applyAllFilters()
+                initialLoadComplete = true
             } catch (e: Exception) {
                 Log.e("OrderViewModel", "Error getting orders: ${e.message}", e)
                 _state.value = MainClientState.Error
@@ -91,63 +84,59 @@ class MainClientViewModel @Inject constructor(
     }
 
     fun searchOrders(query: String) {
-        viewModelScope.launch {
-            try {
-                currentSearchQuery = query
-                applyAllFilters()
-            } catch (e: Exception) {
-                Log.e("OrderViewModel", "Error searching orders: ${e.message}", e)
-                _state.value = MainClientState.Error
-            }
+//        if (!initialLoadComplete) return
+        try {
+            currentSearchQuery = query
+            applyAllFilters()
+        } catch (e: Exception) {
+            Log.e("OrderViewModel", "Error searching orders: ${e.message}", e)
+            _state.value = MainClientState.Error
         }
     }
 
     fun filterByStatuses(statuses: Set<String>) {
-        viewModelScope.launch {
-            try {
-                currentStatusFilters = statuses
-                _selectedStatuses.value = statuses
-                applyAllFilters()
-            } catch (e: Exception) {
-                Log.e("OrderViewModel", "Error filtering orders: ${e.message}", e)
-                _state.value = MainClientState.Error
-            }
+        if (!initialLoadComplete) return
+        try {
+            currentStatusFilters = statuses
+            _selectedStatuses.value = statuses
+            applyAllFilters()
+        } catch (e: Exception) {
+            Log.e("OrderViewModel", "Error filtering orders: ${e.message}", e)
+            _state.value = MainClientState.Error
         }
     }
 
     fun filterByPriceRange(minPriceText: String, maxPriceText: String) {
-        viewModelScope.launch {
-            try {
-                val min = minPriceText.toIntOrNull() ?: 0
-                val max = maxPriceText.toIntOrNull() ?: 10000
+        if (!initialLoadComplete) return
+        try {
+            val min = minPriceText.toIntOrNull() ?: 0
+            val max = maxPriceText.toIntOrNull() ?: 10000
 
-                _minPrice.value = minPriceText
-                _maxPrice.value = maxPriceText
+            _minPrice.value = minPriceText
+            _maxPrice.value = maxPriceText
 
-                currentMinPrice = min
-                currentMaxPrice = max
+            currentMinPrice = min
+            currentMaxPrice = max
 
-                val isFilterActive = (min != 0 || max != 10000)
-                updatePriceFilterApplied(isFilterActive)
-                applyAllFilters()
-            } catch (e: Exception) {
-                Log.e("OrderViewModel", "Error filtering by price: ${e.message}", e)
-                _state.value = MainClientState.Error
-            }
+            val isFilterActive = (min != 0 || max != 10000)
+            updatePriceFilterApplied(isFilterActive)
+            applyAllFilters()
+        } catch (e: Exception) {
+            Log.e("OrderViewModel", "Error filtering by price: ${e.message}", e)
+            _state.value = MainClientState.Error
         }
     }
 
     fun filterByFormats(formats: Set<String>) {
-        viewModelScope.launch {
-            try {
-                currentFormatFilters = formats
-                _formatFilters.value = formats
-                updateFormatFilterApplied(formats.isNotEmpty())
-                applyAllFilters()
-            } catch (e: Exception) {
-                Log.e("OrderViewModel", "Error filtering by format: ${e.message}", e)
-                _state.value = MainClientState.Error
-            }
+        if (!initialLoadComplete) return
+        try {
+            currentFormatFilters = formats
+            _formatFilters.value = formats
+            updateFormatFilterApplied(formats.isNotEmpty())
+            applyAllFilters()
+        } catch (e: Exception) {
+            Log.e("OrderViewModel", "Error filtering by format: ${e.message}", e)
+            _state.value = MainClientState.Error
         }
     }
 
@@ -159,49 +148,44 @@ class MainClientViewModel @Inject constructor(
         _formatFilterApplied.value = isApplied
     }
 
-    fun updatePriceValues(min: String, max: String) {
-        _minPrice.value = min
-        _maxPrice.value = max
-    }
-
     private fun applyAllFilters() {
-        viewModelScope.launch {
-            var filteredOrders = originalOrders
+        val orders = originalOrders ?: return
 
-            if (currentStatusFilters.isNotEmpty()) {
-                filteredOrders = filteredOrders.filter { order ->
-                    currentStatusFilters.contains(order.status)
-                }
+        var filteredOrders = orders
+
+        if (currentStatusFilters.isNotEmpty()) {
+            filteredOrders = filteredOrders.filter { order ->
+                currentStatusFilters.contains(order.status)
             }
-
-            if (currentMinPrice != null || currentMaxPrice != null) {
-                filteredOrders = filteredOrders.filter { order ->
-                    val minMatch = currentMinPrice?.let { order.totalPrice >= it } ?: true
-                    val maxMatch = currentMaxPrice?.let { order.totalPrice <= it } ?: true
-                    minMatch && maxMatch
-                }
-            }
-
-            if (currentFormatFilters.isNotEmpty()) {
-                filteredOrders = filteredOrders.filter { order ->
-                    currentFormatFilters.contains(order.format)
-                }
-            }
-
-            if (currentSearchQuery.isNotEmpty()) {
-                filteredOrders = filteredOrders.filter { order ->
-                    order.number.toString().contains(currentSearchQuery)
-                }
-            }
-
-            filteredOrders = when (currentSortOption) {
-                SortOption.CREATED_NEWEST_FIRST -> filteredOrders.sortedByDescending { it.createdAt }
-                SortOption.CREATED_OLDEST_FIRST -> filteredOrders.sortedBy { it.createdAt }
-                SortOption.UPDATED_NEWEST_FIRST -> filteredOrders.sortedByDescending { it.updatedAt }
-                SortOption.UPDATED_OLDEST_FIRST -> filteredOrders.sortedBy { it.updatedAt }
-            }
-
-            _state.value = MainClientState.Success(filteredOrders)
         }
+
+        if (currentMinPrice != null || currentMaxPrice != null) {
+            filteredOrders = filteredOrders.filter { order ->
+                val minMatch = currentMinPrice?.let { order.totalPrice >= it } ?: true
+                val maxMatch = currentMaxPrice?.let { order.totalPrice <= it } ?: true
+                minMatch && maxMatch
+            }
+        }
+
+        if (currentFormatFilters.isNotEmpty()) {
+            filteredOrders = filteredOrders.filter { order ->
+                currentFormatFilters.contains(order.format)
+            }
+        }
+
+        if (currentSearchQuery.isNotEmpty()) {
+            filteredOrders = filteredOrders.filter { order ->
+                order.number.toString().contains(currentSearchQuery)
+            }
+        }
+
+        filteredOrders = when (currentSortOption) {
+            SortOption.CREATED_NEWEST_FIRST -> filteredOrders.sortedByDescending { it.createdAt }
+            SortOption.CREATED_OLDEST_FIRST -> filteredOrders.sortedBy { it.createdAt }
+            SortOption.UPDATED_NEWEST_FIRST -> filteredOrders.sortedByDescending { it.updatedAt }
+            SortOption.UPDATED_OLDEST_FIRST -> filteredOrders.sortedBy { it.updatedAt }
+        }
+
+        _state.value = MainClientState.Success(filteredOrders)
     }
 }

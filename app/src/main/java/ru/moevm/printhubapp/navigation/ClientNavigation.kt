@@ -13,12 +13,10 @@ import ru.moevm.printhubapp.presentation.client.components.MainClientScreen
 import ru.moevm.printhubapp.presentation.client.components.OrderDetailsScreen
 import ru.moevm.printhubapp.presentation.client.components.SuccessOrderScreen
 import ru.moevm.printhubapp.presentation.client.viewmodels.AddOrderParametersViewModel
-import ru.moevm.printhubapp.presentation.client.viewmodels.MainClientViewModel
 
-fun NavGraphBuilder.clientNavigation(navHostController: NavHostController, viewModelMain: MainClientViewModel) {
+fun NavGraphBuilder.clientNavigation(navHostController: NavHostController) {
     composable(route = Screen.MainClientScreen.route) {
         MainClientScreen(
-            viewModel = viewModelMain,
             navHostController = navHostController,
             onAbout = {
                 navHostController.navigate(Screen.AboutScreen.route)
