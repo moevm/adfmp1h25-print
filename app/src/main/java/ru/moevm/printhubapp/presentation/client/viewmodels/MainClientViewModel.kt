@@ -30,6 +30,24 @@ class MainClientViewModel @Inject constructor(
     private var currentSearchQuery: String = ""
     private var currentSortOption = SortOption.UPDATED_NEWEST_FIRST
 
+    private val _minPrice = MutableStateFlow("0")
+    val minPrice: StateFlow<String> = _minPrice
+
+    private val _maxPrice = MutableStateFlow("10000")
+    val maxPrice: StateFlow<String> = _maxPrice
+
+    private val _priceFilterApplied = MutableStateFlow(false)
+    val priceFilterApplied: StateFlow<Boolean> = _priceFilterApplied
+
+    private val _formatFilterApplied = MutableStateFlow(false)
+    val formatFilterApplied: StateFlow<Boolean> = _formatFilterApplied
+
+    private val _selectedStatuses = MutableStateFlow<Set<String>>(emptySet())
+    val selectedStatuses: StateFlow<Set<String>> = _selectedStatuses
+
+    private val _formatFilters = MutableStateFlow<Set<String>>(emptySet())
+    val formatFilters: StateFlow<Set<String>> = _formatFilters
+
     init {
         getClientOrders()
     }
@@ -88,6 +106,7 @@ class MainClientViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 currentStatusFilters = statuses
+                _selectedStatuses.value = statuses
                 applyAllFilters()
             } catch (e: Exception) {
                 Log.e("OrderViewModel", "Error filtering orders: ${e.message}", e)
@@ -96,11 +115,20 @@ class MainClientViewModel @Inject constructor(
         }
     }
 
-    fun filterByPriceRange(min: Int?, max: Int?) {
+    fun filterByPriceRange(minPriceText: String, maxPriceText: String) {
         viewModelScope.launch {
             try {
+                val min = minPriceText.toIntOrNull() ?: 0
+                val max = maxPriceText.toIntOrNull() ?: 10000
+
+                _minPrice.value = minPriceText
+                _maxPrice.value = maxPriceText
+
                 currentMinPrice = min
                 currentMaxPrice = max
+
+                val isFilterActive = (min != 0 || max != 10000)
+                updatePriceFilterApplied(isFilterActive)
                 applyAllFilters()
             } catch (e: Exception) {
                 Log.e("OrderViewModel", "Error filtering by price: ${e.message}", e)
@@ -113,12 +141,27 @@ class MainClientViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 currentFormatFilters = formats
+                _formatFilters.value = formats
+                updateFormatFilterApplied(formats.isNotEmpty())
                 applyAllFilters()
             } catch (e: Exception) {
                 Log.e("OrderViewModel", "Error filtering by format: ${e.message}", e)
                 _state.value = MainClientState.Error
             }
         }
+    }
+
+    fun updatePriceFilterApplied(isApplied: Boolean) {
+        _priceFilterApplied.value = isApplied
+    }
+
+    fun updateFormatFilterApplied(isApplied: Boolean) {
+        _formatFilterApplied.value = isApplied
+    }
+
+    fun updatePriceValues(min: String, max: String) {
+        _minPrice.value = min
+        _maxPrice.value = max
     }
 
     private fun applyAllFilters() {

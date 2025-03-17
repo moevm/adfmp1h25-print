@@ -119,14 +119,14 @@ fun MainClientScreen(
     val filterFormatPrinterBottomSheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = skipFormatPrinterPartiallyExpanded)
 
-    var priceFilterApplied by rememberSaveable { mutableStateOf(false) }
+    val priceFilterApplied by viewModel.priceFilterApplied.collectAsState()
     var minPrice by rememberSaveable { mutableStateOf("0") }
     var maxPrice by rememberSaveable { mutableStateOf("10000") }
 
-    var formatFilterApplied by rememberSaveable { mutableStateOf(false) }
+    val formatFilterApplied by viewModel.formatFilterApplied.collectAsState()
     var selectedFormats by rememberSaveable { mutableStateOf(setOf<String>()) }
 
-    var selectedStatuses by rememberSaveable { mutableStateOf(setOf<String>()) }
+    val selectedStatuses by viewModel.selectedStatuses.collectAsState()
 
     Scaffold(
         topBar = {
@@ -347,12 +347,10 @@ fun MainClientScreen(
                                     Box(
                                         modifier = Modifier
                                             .clickable {
-                                                selectedStatuses = if (isSelected) {
-                                                    selectedStatuses - statusCode
-                                                } else {
-                                                    selectedStatuses + statusCode
-                                                }
-                                                viewModel.filterByStatuses(selectedStatuses)
+                                                viewModel.filterByStatuses(
+                                                    if (isSelected) selectedStatuses - statusCode
+                                                    else selectedStatuses + statusCode
+                                                )
                                             }
                                             .background(
                                                 if (isSelected) AppTheme.colors.orange10 else AppTheme.colors.gray7,
@@ -447,12 +445,7 @@ fun MainClientScreen(
             viewModel = viewModel,
             sheetState = filterFormatPrinterBottomSheetState,
             scope = scopeFormatPrinter,
-            openFormatPrinterFilterBottomSheet = { openFormatPrinterFilterBottomSheet = false },
-            selectedFormats = selectedFormats,
-            onFormatSelectionChanged = { newFormats, isActive ->
-                selectedFormats = newFormats
-                formatFilterApplied = isActive
-            }
+            openFormatPrinterFilterBottomSheet = { openFormatPrinterFilterBottomSheet = false }
         )
     }
 
@@ -461,14 +454,7 @@ fun MainClientScreen(
             viewModel = viewModel,
             sheetState = filterAmountBottomSheetState,
             scope = scopeAmount,
-            openAmountFilterBottomSheet = { openAmountFilterBottomSheet = false },
-            minPrice = minPrice,
-            maxPrice = maxPrice,
-            onPriceRangeChanged = { min, max, isActive ->
-                minPrice = min
-                maxPrice = max
-                priceFilterApplied = isActive
-            }
+            openAmountFilterBottomSheet = { openAmountFilterBottomSheet = false }
         )
     }
 }
@@ -479,10 +465,10 @@ private fun FormatPrintBottomSheet(
     viewModel: MainClientViewModel,
     sheetState: SheetState,
     scope: CoroutineScope,
-    openFormatPrinterFilterBottomSheet: () -> Unit,
-    selectedFormats: Set<String>,
-    onFormatSelectionChanged: (Set<String>, Boolean) -> Unit
+    openFormatPrinterFilterBottomSheet: () -> Unit
 ) {
+    val selectedFormats by viewModel.formatFilters.collectAsState()
+
     val filterOptions = listOf(
         "A1",
         "A2",
@@ -539,7 +525,6 @@ private fun FormatPrintBottomSheet(
                         .filterIndexed { index, _ -> checkedStates[index] }
                         .toSet()
 
-                    onFormatSelectionChanged(newSelectedFormats, newSelectedFormats.isNotEmpty())
                     viewModel.filterByFormats(newSelectedFormats)
 
                     scope
@@ -599,11 +584,11 @@ private fun AmountFilterBottomSheet(
     viewModel: MainClientViewModel,
     sheetState: SheetState,
     scope: CoroutineScope,
-    openAmountFilterBottomSheet: () -> Unit,
-    minPrice: String,
-    maxPrice: String,
-    onPriceRangeChanged: (String, String, Boolean) -> Unit
+    openAmountFilterBottomSheet: () -> Unit
 ) {
+    val minPrice by viewModel.minPrice.collectAsState()
+    val maxPrice by viewModel.maxPrice.collectAsState()
+
     var inAmount by remember { mutableStateOf(minPrice) }
     var outAmount by remember { mutableStateOf(maxPrice) }
     ModalBottomSheet(
@@ -681,14 +666,8 @@ private fun AmountFilterBottomSheet(
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 onClick = {
-                    val min = inAmount.toIntOrNull() ?: 0
-                    val max = outAmount.toIntOrNull() ?: 10000
-                    val isFilterActive = (min != 0 || max != 10000)
+                    viewModel.filterByPriceRange(inAmount, outAmount)
 
-                    onPriceRangeChanged(inAmount, outAmount, isFilterActive)
-                    viewModel.filterByPriceRange(min, max)
-
-                    viewModel.filterByPriceRange(min, max)
                     scope
                         .launch { sheetState.hide() }
                         .invokeOnCompletion {
