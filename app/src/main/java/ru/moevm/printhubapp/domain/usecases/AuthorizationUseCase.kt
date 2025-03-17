@@ -6,6 +6,6 @@ import ru.moevm.printhubapp.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class AuthorizationUseCase @Inject constructor(private val authRepository: AuthRepository) {
-   operator fun invoke(user: Auth, callback: (RequestResult<Unit>) -> Unit) =
+    operator fun invoke(user: Auth, callback: (RequestResult<Unit>) -> Unit) =
         authRepository.authorization(user, callback)
 }

@@ -27,11 +27,11 @@
 
     <!--    Order card  -->
     <string name="status_create">Создан</string>
-    <string name="order_number">Заказ №1</string>
-    <string name="print_hub_name">Печатный центра: Хамелеон</string>
-    <string name="address_print_hub">Адрес: Санкт-Петербург, улица Попова 5Б</string>
-    <string name="date_of_create">Дата создания: 15.03.2025 15:00</string>
-    <string name="date_of_last_change">Дата последнего обновления: 15.03.2025 15:00</string>
+    <string name="order_number">Заказ %s</string>
+    <string name="print_hub_name">Печатный центра: %s</string>
+    <string name="address_print_hub">Адрес: %s</string>
+    <string name="date_of_create">Дата создания: %s</string>
+    <string name="date_of_last_change">Дата обновления: %s</string>
     <!--    END     -->
 
     <!--    Main Client Screen  -->
@@ -59,7 +59,7 @@
     <string name="add_file">Прикрепить файл</string>
     <string name="total_price">Итого: %s ₽</string>
     <string name="placeholder_comment">Комментарий</string>
-    <string name="create_order_button_text">Оформить заказ</string>
+    <string name="create_order_button_text">Далее</string>
     <!--    END     -->
 
     <!--    Price List Dialog    -->
@@ -92,7 +92,7 @@
     <!--    END     -->
 
     <!--    Order printhub card  -->
-    <string name="status_new">Новый</string>
+    <string name="status_new">Создан</string>
     <string name="status_in_work">В работе</string>
     <string name="status_reade">Выполнен</string>
     <string name="status_reject">Отказ</string>
@@ -101,6 +101,7 @@
 
     <!--    Main Printhub Screen    -->
     <string name="placeholder_choose_order_number">Введите номер заказа</string>
+    <string name="no_order">У вас пока нет заказов</string>
     <!--    END     -->
 
     <!--    Profile Printhub Screen   -->
@@ -123,7 +124,7 @@
 
     <!--    Statistic Screen   -->
     <string name="statistic_screen_title">Статистика</string>
-    <string name="list_title">Расход бумаги:</string>
+    <string name="list_title">Расход бумаги: %s шт</string>
     <string name="toner_title">Расход тонера: %s мл</string>
     <string name="profit_title">Доход: %s ₽</string>
     <string name="price_printer_title">Цена принтера: 5000 ₽</string>
