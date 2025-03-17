@@ -120,8 +120,6 @@ fun MainPrinthubScreen(
         rememberModalBottomSheetState(skipPartiallyExpanded = skipFormatPrinterPartiallyExpanded)
 
     val priceFilterApplied by viewModel.priceFilterApplied.collectAsState()
-    var minPrice by rememberSaveable { mutableStateOf("0") }
-    var maxPrice by rememberSaveable { mutableStateOf("10000") }
 
     val formatFilterApplied by viewModel.formatFilterApplied.collectAsState()
     var selectedFormats by rememberSaveable { mutableStateOf(setOf<String>()) }
@@ -228,7 +226,7 @@ fun MainPrinthubScreen(
 
                 is MainPrinthubState.Success -> {
                     val orders = (state as MainPrinthubState.Success).orders
-                    if (orders.isEmpty() && selectedStatuses.isEmpty() && !priceFilterApplied && selectedFormats.isEmpty()) {
+                    if (orders.isEmpty() && selectedStatuses.isEmpty() && !priceFilterApplied && selectedFormats.isEmpty() && search.isEmpty()) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -345,10 +343,10 @@ fun MainPrinthubScreen(
                                     Spacer(modifier = Modifier.width(4.dp))
                                 }
                                 val statuses = listOf(
-                                    "Создан" to "Создан",
+                                    "Создан" to "Новый",
                                     "В работе" to "В работе",
-                                    "Ожидает получения" to "Готов к получению",
-                                    "Выполнен" to "Получен",
+                                    "Ожидает получения" to "Ожидает получения",
+                                    "Выполнен" to "Выполнен",
                                     "Отказ" to "Отказ"
                                 )
                                 items(statuses.size) { index ->

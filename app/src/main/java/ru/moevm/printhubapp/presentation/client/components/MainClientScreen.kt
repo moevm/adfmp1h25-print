@@ -120,8 +120,6 @@ fun MainClientScreen(
         rememberModalBottomSheetState(skipPartiallyExpanded = skipFormatPrinterPartiallyExpanded)
 
     val priceFilterApplied by viewModel.priceFilterApplied.collectAsState()
-    var minPrice by rememberSaveable { mutableStateOf("0") }
-    var maxPrice by rememberSaveable { mutableStateOf("10000") }
 
     val formatFilterApplied by viewModel.formatFilterApplied.collectAsState()
     var selectedFormats by rememberSaveable { mutableStateOf(setOf<String>()) }
@@ -215,7 +213,7 @@ fun MainClientScreen(
                 is MainClientState.Success -> {
                     Log.d("orders", (state as MainClientState.Success).orders.toString())
                     val orders = (state as MainClientState.Success).orders
-                    if (orders.isEmpty() && selectedStatuses.isEmpty() && !priceFilterApplied && selectedFormats.isEmpty()) {
+                    if (orders.isEmpty() && selectedStatuses.isEmpty() && !priceFilterApplied && selectedFormats.isEmpty() && search.isEmpty()) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
