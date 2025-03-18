@@ -101,6 +101,7 @@
 
     <!--    Main Printhub Screen    -->
     <string name="placeholder_choose_order_number">Введите номер заказа</string>
+    <string name="placeholder_choose_order_number_printhub">Поиск</string>
     <string name="no_order">У вас пока нет заказов</string>
     <!--    END     -->
 

@@ -174,7 +174,9 @@ class MainPrinthubViewModel @Inject constructor(
 
         if (currentSearchQuery.isNotEmpty()) {
             filteredOrders = filteredOrders.filter { order ->
-                order.number.toString().contains(currentSearchQuery)
+                order.number.toString().contains(currentSearchQuery) ||
+                order.files.contains(currentSearchQuery, ignoreCase = true) ||
+                order.clientMail.contains(currentSearchQuery, ignoreCase = true)
             }
         }
 

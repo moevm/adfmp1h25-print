@@ -31,6 +31,7 @@ fun OrderDto.toEntity(): Order =
         id = this.id,
         clientId = this.client_id,
         companyId = this.company_id,
+        clientMail = this.client_mail,
         number = this.number,
         format = this.format,
         paperCount = this.paper_count,
@@ -55,6 +56,7 @@ fun Order.toDto(): OrderDto {
     return OrderDto(
         client_id = this.clientId,
         company_id = this.companyId,
+        client_mail = this.clientMail,
         number = this.number,
         format = this.format,
         paper_count = this.paperCount,

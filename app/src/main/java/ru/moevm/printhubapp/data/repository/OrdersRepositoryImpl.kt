@@ -12,7 +12,10 @@ import ru.moevm.printhubapp.domain.repository.OrdersRepository
 import ru.moevm.printhubapp.utils.Constants.UID_STRING
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
+import ru.moevm.printhubapp.data.model.UserDto
+import ru.moevm.printhubapp.domain.entity.User
 
 class OrdersRepositoryImpl(
     private val db: FirebaseFirestore,
@@ -96,21 +99,36 @@ class OrdersRepositoryImpl(
         return order ?: throw Exception("Order not found")
     }
 
+    private fun getUser(callback: (User) -> Unit) {
+        val userUid = sharedPreferences.getString(UID_STRING, "") ?: ""
+        Log.d("TAG", userUid)
+        users.document(userUid).get().addOnSuccessListener { data ->
+            callback(
+                data.toObject<UserDto>()?.toEntity() ?: throw RuntimeException("user not found")
+            )
+        }
+    }
+
     override fun createOrder(newOrder: Order, callback: (RequestResult<Unit>) -> Unit) {
-        val updatedOrder = newOrder.copy(
-            clientId = userUid,
-        )
-        Log.w("createOrder", "Client id ${userUid}")
-        val orderDto = updatedOrder.toDto()
-        val documentRef = orders.document()
-        documentRef.set(orderDto).addOnSuccessListener {
-            documentRef.update("id", documentRef.id).addOnSuccessListener {
-                callback(RequestResult.Success(Unit))
+        getUser { user ->
+            val updatedOrder = newOrder.copy(
+                clientId = userUid,
+                clientMail = user.mail
+            )
+
+            Log.w("createOrder", "Client id ${userUid}, email ${user.mail}")
+            val orderDto = updatedOrder.toDto()
+            val documentRef = orders.document()
+
+            documentRef.set(orderDto).addOnSuccessListener {
+                documentRef.update("id", documentRef.id).addOnSuccessListener {
+                    callback(RequestResult.Success(Unit))
+                }.addOnFailureListener { e ->
+                    callback(RequestResult.Error(RequestError.Server("Ошибка обновления ID: ${e.message}")))
+                }
             }.addOnFailureListener { e ->
-                callback(RequestResult.Error(RequestError.Server("Ошибка обновления ID: ${e.message}")))
+                callback(RequestResult.Error(RequestError.Server("Ошибка сохранения данных: ${e.message}")))
             }
-        }.addOnFailureListener { e ->
-            callback(RequestResult.Error(RequestError.Server("Ошибка сохранения данных: ${e.message}")))
         }
     }
 

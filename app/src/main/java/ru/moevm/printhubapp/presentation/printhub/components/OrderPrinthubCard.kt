@@ -54,6 +54,16 @@ fun OrderPrinthubCard(
             )
             Spacer(Modifier.height(8.dp))
             Text(
+                text = String.format("Клиент: %s", order.clientMail),
+                fontSize = 16.sp,
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = String.format("Файл: %s", order.files),
+                fontSize = 16.sp,
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
                 text = String.format(
                     stringResource(R.string.date_of_create),
                     order.createdAt.formatToString()

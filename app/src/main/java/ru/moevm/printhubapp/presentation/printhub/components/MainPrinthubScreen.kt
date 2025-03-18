@@ -254,7 +254,7 @@ fun MainPrinthubScreen(
                                 },
                                 placeholder = {
                                     Text(
-                                        text = stringResource(R.string.placeholder_choose_order_number),
+                                        text = stringResource(R.string.placeholder_choose_order_number_printhub),
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Normal,
                                         color = AppTheme.colors.gray7

@@ -43,7 +43,7 @@ fun PrintHubCard(
                     number = Random.nextInt(1000000),
                     format = format,
                     paperCount = paperCount,
-                    files = "",
+                    files = "print_file.pdf",
                     totalPrice = totalPrice,
                     comment = comment,
                     status = "Создан",

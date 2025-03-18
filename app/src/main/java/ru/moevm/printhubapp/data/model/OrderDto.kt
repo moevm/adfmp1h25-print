@@ -4,6 +4,7 @@ import com.google.firebase.Timestamp
 data class OrderDto(
     val id: String = "",
     val client_id: String = "",
+    val client_mail: String = "",
     val company_id: String = "",
     val number: Int = 0,
     val format: String = "",
